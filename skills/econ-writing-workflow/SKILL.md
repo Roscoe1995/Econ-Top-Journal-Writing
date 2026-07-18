@@ -1,6 +1,6 @@
 ---
 name: econ-writing-workflow
-description: Use as the main entry point for economics writing workflows in English or Chinese, including paper planning, full paper drafting from research questions and result packages, abstract/introduction/results revision, Chinese top-journal adaptation, English and Chinese diction cleanup, AI/translationese removal, table and figure design, notes/captions, formatting checks, and routing to empirical workflow support when data cleaning, regressions, or variable construction are involved.
+description: Use as the main entry point for economics writing workflows in English or Chinese, including paper and research-proposal planning, scope and claim convergence, full paper drafting from research questions and result packages, major revision and final audits, abstract/introduction/results revision, Chinese top-journal adaptation, English and Chinese diction cleanup, AI/translationese removal, table and figure design, notes/captions, formatting checks, and routing to empirical workflow support when data cleaning, regressions, or variable construction are involved.
 ---
 
 # Economics Writing Workflow
@@ -45,7 +45,9 @@ After adding the rule, include a clear marker heading so future agents can detec
 
 ## First Decision
 
-Before writing or editing, classify the request:
+Before writing or editing, classify the task stage as `exploration`, `proposal`, `full drafting`, `major revision`, `local polish`, or `final audit`. Do not load paper-wide convergence or final-audit checks for a bounded local edit unless a substantive contradiction blocks the requested change.
+
+Then classify the request:
 
 1. **English paper prose**: abstract, introduction, literature review, model/theory prose, empirical/results prose, conclusion, referee response, or English revision.
 2. **English diction cleanup**: remove AI-like prose, translationese, vague contribution language, weak verbs, or template signposting.
@@ -58,16 +60,18 @@ Before writing or editing, classify the request:
 9. **Journal submission style**: target-journal formatting, submission requirements, anonymous PDF checks, accepted-version Word formatting, title hierarchy, references, JEL codes, appendices, or journal-specific body/appendix placement.
 10. **Tables and figures**: table/figure admission, main-text versus appendix placement, three-line tables, regression/robustness/heterogeneity/mechanism tables, notes, captions, palettes, fonts, or export quality.
 11. **Empirical workflow**: data cleaning, variable construction, sample construction, regression code, estimation, diagnostics, or reproducibility.
+12. **Research convergence and proposal feasibility**: scope freezing, one-sentence research question, contribution hierarchy, current non-goals, model or identification closure, theory-to-measure mapping, proposal execution plans, cross-section consistency, or stopping a mature revision cycle.
 
 If a request spans more than one category, handle them in this order:
 
 1. empirical workflow and sample/design facts;
 2. literature and judgment grounding;
-3. table and figure design;
-4. paper structure and section logic;
-5. full-paper drafting plan;
-6. prose and diction cleanup;
-7. final formatting/export checks.
+3. applicable research-convergence gates;
+4. table and figure design;
+5. paper structure and section logic;
+6. full-paper drafting plan;
+7. prose and diction cleanup;
+8. final formatting/export checks.
 
 ## Routing
 
@@ -78,6 +82,10 @@ If a request spans more than one category, handle them in this order:
 - For literature-dependent drafting, closest-literature positioning, literature search/download decisions, source ledgers, citation grounding, theory/mechanism/variable alignment, or calibration of similar judgments from prior papers, load `references/literature-grounding/01_literature_and_judgment_grounding.md` before drafting the relevant prose.
 - For manuscript-facing versus author-facing voice, internal memo leakage, or requests to remove author workflow notes from paper prose, load `references/manuscript-voice/01_no_author_memo_in_manuscript.md` before finalizing text.
 - For full-paper drafting from research questions, regression tables, figures, or result folders, load `references/full-paper-drafting/` first, then route table/figure decisions to `econ-table-figure-design` and language-specific prose to `econ-write` or `cn-top-econ-writing`.
+- For full-paper or proposal scoping, major restructuring, contribution drift, terminology drift, or repeated expansion beyond the current question, load `references/research-convergence/01_scope_and_claim_contract.md`.
+- For theory/model closure, assumption roles, theory-to-measure mapping, identification capacity, evidence-status calibration, welfare claims, or normative policy recommendations, load only the applicable sections of `references/research-convergence/02_theory_empirical_closure_gates.md`.
+- For a general research proposal, executable research plan, paper-wide ordered revision, final consistency audit, or mature-draft stopping decision, load only the applicable sections of `references/research-convergence/03_proposal_revision_stop_gates.md`.
+- Do not load all research-convergence modules for local diction cleanup, a bounded paragraph rewrite, citation formatting, or a narrow table/figure note edit. Keep the requested scope unless a high-impact substantive contradiction prevents a responsible local answer.
 - For Chinese top-journal writing, use `cn-top-econ-writing`.
 - For target-journal submission style, anonymous manuscript checks, accepted-version formatting, references, appendices, or requests such as “按《经济学（季刊）》投稿要求调整”, use `cn-top-econ-writing` and its `references/journal-styles/` module. For 《经济学（季刊）》, load `references/journal-styles/00_journal_submission_workflow.md`, `references/journal-styles/economics_quarterly.md`, and when table/figure/appendix issues appear, `references/journal-styles/common_chinese_journal_rules.md`.
 - For Chinese diction cleanup, use `cn-top-econ-writing` and load `references/chinese-diction/` selectively.
@@ -94,6 +102,7 @@ Route immediately when these boundaries appear:
 - abstracts, introductions, literature positioning, research design, results, mechanisms, heterogeneity, contributions, or conclusions where the wording depends on observable objects, comparison groups, design/results separation, mechanism evidence, contribution margins, or terminology stability: load `references/argument-logic/06_draft_time_argument_clarity.md`;
 - main regression results, mechanism or heterogeneity estimates, coefficient size, economic magnitude, marginal effects, interaction net effects, log-to-percent conversions, mean/SD/percentile comparisons, or policy benchmark interpretation: load `references/regression-results/01_economic_magnitude_interpretation.md`;
 - local reference papers, PDFs, `.bib` files, literature search/download, closest-literature positioning, data/theory/variable/mechanism alignment with prior papers, contribution boundaries, or claim-strength calibration: load `references/literature-grounding/01_literature_and_judgment_grounding.md`;
+- full drafting, proposal development, major restructuring, scope or terminology drift, theory/model closure, theory-to-measure mapping, normative policy claims, paper-wide revision, or final-audit stopping decisions: load only the matching `references/research-convergence/` file and section;
 - target-journal style, anonymous submission, title hierarchy, references, JEL codes, appendices, Word/PDF submission format, or 《经济学（季刊）》 rules: use `cn-top-econ-writing` and its `references/journal-styles/` module;
 - data cleaning, variable construction, regression code, estimation, sample changes, or post-estimation sample audit: pair with `empirical-econ-workflow`;
 - English prose or English diction: use `econ-write`;
@@ -103,6 +112,10 @@ After a specialized skill settles its part, return to this workflow to integrate
 
 ## Operating Rules
 
+- Apply research-convergence rules by task stage, paper type, requested scope, and claim type. Do not turn a local prose edit into an unsolicited paper-wide audit, and do not force an exploration-stage idea into premature closure.
+- Keep one central question visible while preserving legitimate secondary theory, data, measurement, structural, or policy contributions that materially change the intellectual claim. Treat fixed paragraph counts, result counts, and minimal-model advice as defaults with paper-type exceptions, not universal vetoes.
+- Distinguish model results, numerical exercises, causal estimates, descriptive facts, suggestive interpretations, and planned tests. The abstract, introduction, conclusion, and policy discussion must not state a stronger or more complete result than the body supports.
+- Keep scope contracts, non-goal lists, consistency matrices, revision-pass labels, and stopping decisions in author-facing logs or memos. Never insert them into manuscript prose, table notes, figure notes, appendix notes, or footnotes.
 - Read available manuscript context before giving paper-level prose advice. If only an excerpt is available, state that the advice is excerpt-level.
 - Before drafting each paper-facing paragraph, apply the draft-time clarity gate: identify the object, observable or model anchor, claim type, comparison, and section function. If a needed object, comparison, timing, result variable, mechanism link, or literature margin is unclear, ask the user or leave a concrete `TODO` rather than smoothing over the gap.
 - Do not rewrite tables or figures as prose problems. Table selection, sample comparability, notes, and visual design are part of the research presentation.
@@ -128,6 +141,14 @@ Load only the relevant files:
 - `references/argument-logic/04_table_figure_logic.md`: whether tables and figures serve the main line.
 - `references/argument-logic/05_revision_workflow.md`: full-paper logic revision workflow.
 - `references/argument-logic/06_draft_time_argument_clarity.md`: draft-time concept grounding, comparison clarity, design/results separation, mechanism-versus-heterogeneity, literature-margin positioning, and terminology stability.
+
+## Research-Convergence References
+
+Load only the matching module and relevant section:
+
+- `references/research-convergence/01_scope_and_claim_contract.md`: task-stage classification, scope contract, paper-type argument spine, must-preserve/current-non-goal lists, terminology ledger, and reopening conditions.
+- `references/research-convergence/02_theory_empirical_closure_gates.md`: evidence-status calibration, model closure, friction and assumption roles, economic-result qualification, concept-to-measure mapping, identification capacity, and normative policy conditions.
+- `references/research-convergence/03_proposal_revision_stop_gates.md`: proposal status and executable plans, ordered major-revision passes, author-facing consistency matrix, and stop/reopen criteria.
 
 ## Full-Paper Drafting References
 
@@ -167,6 +188,10 @@ Before finalizing a response, confirm that:
 - any main regression or important mechanism/robustness result has an economic magnitude benchmark, or a concrete `TODO` if the needed descriptive statistics are missing;
 - any literature-dependent claim, theory, mechanism, variable, data source, empirical choice, contribution boundary, or policy implication is grounded in inspected local sources or marked with a concrete `TODO`;
 - any full-draft output has an input audit, argument spine, table/figure placement plan, and unresolved `TODO` list when needed;
+- any applicable convergence module was loaded selectively rather than imposed on an unrelated local edit;
+- any proposal distinguishes completed, preliminary, planned, and expected results and supplies executable stages, risks, fallbacks, and deliverables when required;
+- any theory-to-empirical claim has a recoverable concept-to-measure link, and any normative policy claim states the relevant social-private wedge and implementation conditions;
+- any final consistency matrix, scope contract, or stop decision remains author-facing and does not leak into the manuscript;
 - any prose revision removes vague, inflated, AI-like, or translation-like wording;
 - any drafted or revised paragraph grounds abstract concepts, states needed comparisons, keeps design separate from findings, explains mechanism links rather than relabeling heterogeneity, and uses stable terminology;
 - no paper-facing paragraph, table note, or figure note contains author-facing workflow notes, draft-management explanations, or internal discussion with the author;
