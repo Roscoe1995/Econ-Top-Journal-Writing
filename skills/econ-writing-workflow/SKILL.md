@@ -43,6 +43,71 @@ When producing tables, figures, maps, or edited images, verify the final rendere
 
 After adding the rule, include a clear marker heading so future agents can detect it and avoid asking again.
 
+## Paper Plan And Artifact Lifecycle
+
+For multi-step paper work or a major paper section, first locate the project's
+single authoritative current-plan store and current-plan document. If none
+exists, ask the author whether to establish it before substantive production.
+Do not create parallel current-plan files.
+
+Read the authoritative current plan before each substantive phase. Keep only
+the latest accepted objective and claim sequence, admitted evidence and paper
+role, main-text or appendix placement, reader-facing terminology, unresolved
+decisions, current non-goals, and authorization boundaries. When the author
+approves, rejects, narrows, or replaces a plan, update the current plan in
+place during the same task. Keep historical process in task logs, manifests,
+or audit packages rather than competing current-plan documents.
+
+Develop exploratory and candidate tables, figures, maps, measures,
+specifications, model outputs, and other research objects outside the
+centralized current-artifact store. Track two dimensions separately:
+
+- `artifact_state`: `exploratory`, `candidate`, `author-confirmed`,
+  `frozen-current`, `rejected`, or `superseded`;
+- `manuscript_state`: `not-integrated` or `manuscript-integrated`.
+
+Never infer a later state or approval from an earlier one. An object may remain
+`frozen-current` while also being `manuscript-integrated`; a revision that
+replaces it may become `superseded` while an older manuscript still cites that
+revision.
+
+Before moving to a new substantive phase, update the authoritative current
+plan and check whether an `author-confirmed` object still lacks an explicit
+freeze decision. If so, ask whether to freeze it as the sole current revision.
+Do not repeatedly ask after the project record contains the decision, and do
+not freeze a merely plausible, validated, or polished candidate.
+
+For every freeze, replacement, rejection, or manuscript integration, load and
+follow `references/artifact-lifecycle/01_artifact_state_and_freeze_protocol.md`.
+That protocol requires a machine-readable registry, a complete freeze
+manifest, SHA-256 coverage for code, inputs, outputs, and validation records,
+and a verified immutable audit bundle before any current revision is replaced.
+Do not report a freeze complete while a required manifest, checksum, approval,
+or recovery artifact is missing.
+
+Keep the centralized current-artifact store current-state only. Build and
+validate replacement candidates outside it. Before updating stable current
+paths, preserve and verify the old frozen revision in the superseded audit
+store; then switch the replacement into the stable paths and update the
+registry. Do not accumulate competing current names such as `v2`, `final2`,
+`new`, or `latest`, and do not treat current-state cleanup as permission to
+delete audit history or original inputs.
+
+Treat substantive approval, freeze approval, replacement approval, and
+manuscript-integration approval as separate decisions. Freezing never
+authorizes Word/LaTeX edits, caption or note changes, figure redesign,
+manuscript insertion, or submission export. Before integration, verify the
+proposed object and placement against the authoritative current plan and the
+current-artifact registry, obtain separate manuscript authorization, and
+record the exact manuscript version and location.
+
+This research-object lifecycle registry is distinct from the multiagent
+manuscript `artifact_contract`, which protects accepted manuscript content,
+length, and main-text sufficiency. When both apply, maintain both records; do
+not use either as a substitute for the other. Follow stricter project-level
+repository, terminology-firewall, manuscript-conservation, or authorization
+rules first.
+
 ## First Decision
 
 Before writing or editing, classify the task stage as `exploration`, `proposal`, `full drafting`, `major revision`, `local polish`, or `final audit`. Do not load paper-wide convergence or final-audit checks for a bounded local edit unless a substantive contradiction blocks the requested change.
@@ -149,6 +214,17 @@ Load only the matching module and relevant section:
 - `references/research-convergence/01_scope_and_claim_contract.md`: task-stage classification, scope contract, paper-type argument spine, must-preserve/current-non-goal lists, terminology ledger, and reopening conditions.
 - `references/research-convergence/02_theory_empirical_closure_gates.md`: evidence-status calibration, model closure, friction and assumption roles, economic-result qualification, concept-to-measure mapping, identification capacity, and normative policy conditions.
 - `references/research-convergence/03_proposal_revision_stop_gates.md`: proposal status and executable plans, ordered major-revision passes, author-facing consistency matrix, and stop/reopen criteria.
+
+## Artifact-Lifecycle Reference
+
+Load for multi-step projects that create, approve, freeze, replace, reject, or
+insert tables, figures, maps, measures, specifications, model outputs, or other
+research objects:
+
+- `references/artifact-lifecycle/01_artifact_state_and_freeze_protocol.md`:
+  separates artifact lifecycle from manuscript integration; defines allowed
+  transitions, mandatory registry and SHA-256 fields, immutable superseded
+  audit bundles, and safe current-path replacement.
 
 ## Full-Paper Drafting References
 
