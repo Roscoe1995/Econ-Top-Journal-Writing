@@ -18,7 +18,7 @@ Then ask the user, when the answer is not obvious:
 - whether the agent should help search for publicly available papers or working papers;
 - whether missing Chinese papers should be left as user-supplied items.
 
-If a Chinese paper, database-licensed paper, or paywalled source cannot be obtained locally, tell the user plainly. It is acceptable to continue without it, but the affected literature positioning, theory, mechanism, variable alignment, or citation judgment must remain more author-supervised and should carry a concrete `TODO` when needed.
+If a Chinese paper, database-licensed paper, or paywalled source cannot be obtained locally, tell the user plainly. Continue only with unaffected content. A missing bibliographic, citation, or verification detail that does not change a frozen proposition may remain as an author-facing `TODO`. If the missing source determines literature positioning, theory, mechanism, variable meaning, identification, contribution, policy implication, or claim strength, return `evidence_conflict` and do not draft the affected prose.
 
 ## 2. Build A Source Ledger Before Writing From Literature
 
@@ -98,7 +98,7 @@ During drafting, follow this loop:
 2. Search the source ledger and judgment ledger for that function.
 3. If the ledger is enough, draft with citations and boundaries.
 4. If the ledger is not enough, inspect the relevant PDF/text passage before writing.
-5. If the source is missing, ask the user or insert a concrete `TODO[literature]`, `TODO[variable]`, `TODO[mechanism]`, or `TODO[identification]`.
+5. If the source is missing, ask the user. Use an author-facing `TODO[literature]` only for a non-semantic citation or verification detail inside an otherwise frozen and supported proposition. If the gap affects a variable's meaning, mechanism, identification, contribution, policy implication, or claim strength, return `evidence_conflict` and leave the affected manuscript text unwritten; do not substitute `TODO[variable]`, `TODO[mechanism]`, or `TODO[identification]` for the missing support.
 
 Never fill the gap with invented author-year citations, guessed findings, generic field claims, or unsupported "common sense" mechanisms.
 
@@ -110,5 +110,5 @@ Before finalizing literature-dependent text, check:
 - every data, theory, variable, mechanism, specification, or policy judgment borrowed from literature is aligned with the relevant source;
 - every contribution claim is relative to concrete literature, not a vague `现有研究较少`;
 - every strong claim has adequate support strength;
-- every unsupported or unavailable source is marked with a concrete TODO or user question;
+- every unsupported or unavailable source is either a non-semantic author-facing TODO, or has triggered `evidence_conflict`/a user question with the affected manuscript text withheld;
 - no author-facing source notes, extraction notes, or judgment labels entered the manuscript.

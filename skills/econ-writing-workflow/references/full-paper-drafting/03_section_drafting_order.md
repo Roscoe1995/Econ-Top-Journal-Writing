@@ -7,16 +7,18 @@ Use this file to choose the drafting order for a full economics paper draft.
 Draft in this order:
 
 1. input audit and missing information list;
-2. table and figure admission;
-3. argument spine and section outline;
-4. data, sample, and empirical strategy or model setup;
-5. results narrative;
-6. mechanism, heterogeneity, and robustness narrative;
-7. introduction;
-8. literature and contribution;
-9. abstract;
-10. conclusion;
-11. diction, logic, and formatting linter pass.
+2. literature and evidence grounding;
+3. author-intent confirmation, which normally freezes the confirmed meaning for the requested drafting scope in the same act;
+4. table and figure admission;
+5. argument spine and section outline within the frozen intent;
+6. data, sample, and empirical strategy or model setup;
+7. results narrative;
+8. mechanism, heterogeneity, and robustness narrative;
+9. introduction;
+10. literature and contribution;
+11. abstract;
+12. conclusion;
+13. semantic-fidelity, diction, logic, and formatting linter pass.
 
 Do not start with the abstract unless the evidence package and argument spine are already stable.
 
@@ -40,6 +42,7 @@ Do not start with the abstract unless the evidence package and argument spine ar
 
 ## Drafting Discipline
 
+- Apply `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md` before the first claim-bearing section and after any approved intent change.
 - Write paper-facing prose only. Keep workflow explanations in notes or task logs.
 - Do not describe why the author changed a specification unless the reader needs it to evaluate the claim.
-- Put unresolved gaps in `TODO` form instead of hiding them in vague prose.
+- Put unresolved non-semantic facts in author-facing `TODO` form instead of hiding them in vague prose. If an unresolved item would change intended meaning, return `clarification_required` and do not draft the affected text.

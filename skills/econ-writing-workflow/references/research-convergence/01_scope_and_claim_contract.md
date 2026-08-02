@@ -37,7 +37,17 @@ For `proposal`, `full drafting`, or `major revision`, create a compact author-fa
 
 Keep the contract in a task log, project brief, or revision memo. Never paste it into manuscript prose, table notes, figure notes, appendix notes, or footnotes.
 
-Treat the contract as provisional during exploration. Treat it as frozen only after the user accepts it or the manuscript and evidence make it unambiguous.
+Treat the contract as provisional during exploration. Evidence and manuscript
+context may support a proposed reconstruction, but they cannot decide what the
+author intends to emphasize, exclude, imply, or avoid. Treat the contract as
+frozen only after explicit author acceptance.
+
+This scope contract defines the paper-wide question, contribution structure,
+must-preserve content, non-goals, and terminology. It does not by itself
+authorize the exact meaning of new claim-bearing prose. Before substantive
+drafting or rewriting, also apply
+`references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`
+at the paper, section, or high-risk passage level needed for the task.
 
 ## 3. Paper-Type Spine
 
@@ -53,11 +63,15 @@ Require each main section to defend one link. Do not force every paper into a ca
 
 ## 4. Draftability Decision
 
-- **Ready**: the question, contribution structure, model/design path, and current non-goals are recoverable. Continue drafting.
-- **Provisional**: the main direction is usable, but one or more items need a concrete `TODO`. Draft only the unaffected parts.
+- **Ready**: the question, contribution structure, model/design path, and current non-goals are recoverable, and the requested claim-bearing scope has a frozen-current author-intent contract. Continue drafting within that intent.
+- **Provisional**: the main direction is usable, but one or more non-semantic facts need a concrete `TODO`. Draft only parts whose meaning is already confirmed and unaffected.
 - **Blocked**: competing definitions or substantive choices would produce materially different papers. Ask the user before selecting among them.
 
-Do not block a bounded rewrite merely because the entire paper lacks a frozen contract. Apply the decision only to the scope of work that depends on the missing choice.
+Do not block a bounded rewrite merely because the entire paper lacks a frozen
+paper-wide contract. Apply the decision only to the scope that depends on the
+missing choice. A bounded substantive rewrite still needs a compact confirmed
+intent contract; only an explicitly meaning-preserving mechanical edit is
+exempt.
 
 ## 5. Reopening Conditions
 

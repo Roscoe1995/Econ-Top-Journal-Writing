@@ -30,11 +30,11 @@ Keep the relevant skill active throughout the task unless the user explicitly op
 
 During manuscript drafting or revision, separate paper-facing text from author memos and task logs before writing each paragraph, table note, figure note, appendix note, or footnote. Only reader-facing manuscript text may enter the paper. Author workflow notes, submission-positioning discussion, reasons for moving/deleting material, and author-agent internal decisions must stay in the response, task README, revision memo, or checklist.
 
-When paper facts, variable definitions, sample construction, identification choices, target-journal requirements, table/figure meanings, or the user's intended claim are unclear, ask the user or mark a concrete `TODO`. Do not guess, invent, silently choose among substantive alternatives, or write around the uncertainty as if it were known.
+Before drafting claim-bearing prose, determine whether the author has explicitly fixed the intended meaning for the requested scope. If not, inspect the available context, ask the smallest grouped set of material questions, restate the intended meaning for confirmation, and wait. Do not draft the affected prose or use a `TODO` to bypass unresolved author intent. A `TODO` may represent a missing factual detail only when it does not change the already confirmed meaning.
 
 Before drafting each paper-facing paragraph, apply draft-time argument clarity: ground abstract concepts in observable/model objects, state the comparison for relative or causal claims, keep design language separate from findings, distinguish mechanisms from plain heterogeneity, position close literature by the margin advanced, and keep terminology stable.
 
-Before drafting literature-dependent claims, check whether the project has local reference papers, literature notes, `.bib` files, or source ledgers. Ask whether the literature is sufficient and whether the user wants help finding publicly available papers. If a Chinese or paywalled source cannot be obtained locally, tell the user; continuing is allowed, but affected judgments need concrete TODOs or more user confirmation. When the paper uses literature-based data, theories, variables, mechanisms, or empirical choices, read the relevant source material and align with it instead of inventing a new framing.
+Before drafting literature-dependent claims, check whether the project has local reference papers, literature notes, `.bib` files, or source ledgers. Ask whether the literature is sufficient and whether the user wants help finding publicly available papers. If a Chinese or paywalled source cannot be obtained locally, tell the user and continue only with unaffected content. A non-semantic citation or verification detail may remain as an author-facing `TODO`; if the missing source affects literature positioning, theory, mechanism, variable meaning, identification, contribution, policy implication, or claim strength, return `evidence_conflict` and leave the affected manuscript text unwritten. When the paper uses literature-based data, theories, variables, mechanisms, or empirical choices, read the relevant source material and align with it instead of inventing a new framing.
 
 When writing regression results, main findings, mechanisms, heterogeneity, robustness, abstracts, introductions, or conclusions that mention coefficient size, translate estimates into economic magnitude using at least one appropriate benchmark. Prefer natural units or real policy changes when available; use means, standard deviations, or percentile spreads only when they fit the variable and identification source. Never invent descriptive statistics.
 
@@ -108,9 +108,65 @@ not use either as a substitute for the other. Follow stricter project-level
 repository, terminology-firewall, manuscript-conservation, or authorization
 rules first.
 
+## Author Intent And Semantic Fidelity
+
+Before new claim-bearing prose, substantive rewriting, translation that may
+change meaning, or section restructuring, load and follow
+`references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`.
+Do this even for a local passage; a local scope exception from paper-wide
+convergence does not authorize the agent to infer the author's meaning.
+
+Inspect the manuscript, current plan, evidence, and prior author decisions
+before asking. If an existing frozen author-intent contract covers the exact
+scope, reuse it without repeated confirmation. If the author has already stated
+one uniquely determined meaning and requested writing from it, record that
+instruction as the frozen-current contract. Otherwise, ask the smallest grouped
+set of questions that would change the text and teach back the proposed meaning.
+The author's explicit confirmation normally freezes that meaning for the stated
+drafting scope in the same act; do not ask for a redundant second approval. Keep
+it unfrozen only when the author explicitly reserves approval, a material
+question remains unresolved, or an evidence conflict blocks the intended claim.
+
+Treat the author as the authority over what the paper is intended to say and
+the inspected evidence as the authority over what the paper can support.
+Return `clarification_required` when intended meaning remains ambiguous or
+internally inconsistent. Return `evidence_conflict` when the intended claim
+exceeds the evidence. In either state, do not write around the problem, insert
+the disputed claim with a `TODO`, or silently substitute the agent's preferred
+interpretation.
+
+Once the contract is frozen, preserve every `must_express`, `must_not_claim`,
+`must_not_imply`, required qualifier, evidence boundary, and terminology rule.
+The agent may improve syntax, order, transitions, and concision only within the
+recorded `allowed_discretion`. Put alternative interpretations or stronger
+frames in an author-facing memo and obtain approval before they enter the
+manuscript. If intent changes, supersede only the affected contract entry and
+recheck its downstream prose; never allow silent semantic drift.
+
+After drafting, run the semantic-fidelity audit from the reference. Do not
+deliver or integrate text that omits a required proposition, adds an
+unapproved claim, strengthens association into causality, upgrades
+heterogeneity into mechanism evidence, broadens scope, drops a qualifier, or
+reintroduces a forbidden implication.
+
+Pure spelling, punctuation, citation-format, layout, or grammar-only edits do
+not require the full intent-elicitation protocol when the author explicitly
+requires meaning preservation or the requested operation has one unambiguously
+mechanical, meaning-preserving correction. Use the source wording and the
+narrow requested operation as the baseline. Verify the correction itself,
+including subject-verb agreement, pronoun antecedent and number, tense,
+negation, modifier attachment, and punctuation or citation consistency. Stop
+and ask only if the edit exposes a material ambiguity or requires choosing
+among substantively different meanings.
+
 ## First Decision
 
 Before writing or editing, classify the task stage as `exploration`, `proposal`, `full drafting`, `major revision`, `local polish`, or `final audit`. Do not load paper-wide convergence or final-audit checks for a bounded local edit unless a substantive contradiction blocks the requested change.
+
+Task-stage classification never overrides the author-intent gate. A local
+substantive rewrite still requires confirmed meaning; only an explicitly or
+unambiguously meaning-preserving mechanical edit receives the narrow exception
+above.
 
 Then classify the request:
 
@@ -140,6 +196,7 @@ If a request spans more than one category, handle them in this order:
 
 ## Routing
 
+- For new claim-bearing prose, substantive rewriting, meaning-sensitive translation, section restructuring, or uncertainty about what the author wants to say or not say, first load `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`.
 - For English paper prose, use `econ-write`.
 - For English diction cleanup, use `econ-write` and load `references/english-diction/` selectively.
 - For full-paper logic, repeated material, emphasis, section ordering, and argument-spine audits, load `references/argument-logic/` selectively before polishing prose. Before drafting or revising abstracts, introductions, literature positioning, design, results, mechanisms, heterogeneity, contributions, or conclusions, load `references/argument-logic/06_draft_time_argument_clarity.md` so clarity is handled during generation, not only in the final audit.
@@ -163,6 +220,7 @@ Do not route only once at the beginning of a long task. At the start of each sub
 
 Route immediately when these boundaries appear:
 
+- new claim-bearing prose, substantive rewriting, meaning-sensitive translation, section restructuring, or possible drift in claim meaning, strength, qualifiers, implications, or emphasis: load `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md` before the language-specific writing skill;
 - tables, figures, maps, image edits, captions, legends, colorbars, fonts, export quality, or main-text versus appendix placement: use `econ-table-figure-design`;
 - abstracts, introductions, literature positioning, research design, results, mechanisms, heterogeneity, contributions, or conclusions where the wording depends on observable objects, comparison groups, design/results separation, mechanism evidence, contribution margins, or terminology stability: load `references/argument-logic/06_draft_time_argument_clarity.md`;
 - main regression results, mechanism or heterogeneity estimates, coefficient size, economic magnitude, marginal effects, interaction net effects, log-to-percent conversions, mean/SD/percentile comparisons, or policy benchmark interpretation: load `references/regression-results/01_economic_magnitude_interpretation.md`;
@@ -182,18 +240,18 @@ After a specialized skill settles its part, return to this workflow to integrate
 - Distinguish model results, numerical exercises, causal estimates, descriptive facts, suggestive interpretations, and planned tests. The abstract, introduction, conclusion, and policy discussion must not state a stronger or more complete result than the body supports.
 - Keep scope contracts, non-goal lists, consistency matrices, revision-pass labels, and stopping decisions in author-facing logs or memos. Never insert them into manuscript prose, table notes, figure notes, appendix notes, or footnotes.
 - Read available manuscript context before giving paper-level prose advice. If only an excerpt is available, state that the advice is excerpt-level.
-- Before drafting each paper-facing paragraph, apply the draft-time clarity gate: identify the object, observable or model anchor, claim type, comparison, and section function. If a needed object, comparison, timing, result variable, mechanism link, or literature margin is unclear, ask the user or leave a concrete `TODO` rather than smoothing over the gap.
+- Before drafting each paper-facing paragraph, apply the author-intent gate and then the draft-time clarity gate. Identify the intended proposition, object, observable or model anchor, claim type, comparison, qualifiers, forbidden implications, and section function. If an unknown item would change meaning, return `clarification_required`; use a `TODO` only for a missing non-semantic fact inside an already confirmed proposition.
 - Do not rewrite tables or figures as prose problems. Table selection, sample comparability, notes, and visual design are part of the research presentation.
 - Do not put author workflow notes in paper-facing text, table notes, or figure notes.
 - Before delivering or inserting manuscript text, classify each sentence as paper-facing text, author memo, or task log. Only paper-facing text may enter the manuscript.
-- If the manuscript context is unclear on research question, variables, sample, identification, table/figure meaning, target journal, or whether the author wants to keep/delete a substantive claim, ask the user or leave a concrete `TODO`; do not guess.
-- When discussing regression results in the manuscript, translate the coefficient into at least one suitable economic magnitude benchmark. Do not invent means, standard deviations, percentiles, policy changes, or marginal effects; compute them from supplied materials, ask for them, or mark a concrete `TODO`.
-- Before writing literature-dependent claims, check local literature materials and ask whether they are sufficient when that is unclear. If the user wants help finding literature, only rely on papers that can be inspected or that the user supplies. If important Chinese or paywalled papers are unavailable, say so and mark the affected judgment for user confirmation.
+- If the manuscript context is unclear on research question, variables, sample, identification, table/figure meaning, target journal, or whether the author wants to keep, delete, strengthen, weaken, or reframe a substantive claim, ask the user and stop the affected drafting scope; do not guess or use a `TODO` as semantic authorization.
+- When discussing regression results in the manuscript, translate the coefficient into at least one suitable economic magnitude benchmark. Do not invent means, standard deviations, percentiles, policy changes, or marginal effects; compute them from supplied materials or ask for them. If the missing benchmark is recorded as an author-facing `TODO`, keep the unsupported magnitude out of paper-facing prose.
+- Before writing literature-dependent claims, check local literature materials and ask whether they are sufficient when that is unclear. If the user wants help finding literature, only rely on papers that can be inspected or that the user supplies. If important Chinese or paywalled papers are unavailable, say so; use an author-facing `TODO` only for non-semantic citation or verification details, and return `evidence_conflict` with affected prose withheld when the missing support changes the claim.
 - When the paper uses or adapts data, theory, concepts, variables, mechanisms, classifications, model objects, controls, fixed effects, heterogeneity dimensions, robustness checks, or policy interpretations from reference papers, inspect the relevant source material first and align terminology, construction, sample scope, and claim strength with those sources. Do not invent a new framing when a local reference already provides the relevant concept or boundary.
 - When writing main-text pointers to appendices, tables, figures, or online appendices, keep them as pure pointers: state what to see and where to see it; only when needed, name the substantive role for the current claim, such as robustness, variable construction, sample scope, background fact, or extended result. Do not write meta-language such as `this is related to the main text` or `因此与正文有关`. Do not include layout or production language such as split columns, left/right halves, column width, page breaks, continued tables, repeated headers, or appendix-table formatting in the main text; put necessary reading guidance in the appendix text, table title, or note.
 - Do not merge all specialized rules into the response. Load only the relevant child skill or reference files needed for the task.
 - Preserve the user's language target: English manuscript tasks should output English unless asked otherwise; Chinese top-journal tasks should output Chinese unless asked otherwise.
-- For full draft requests, never invent citations, data, variable definitions, identification claims, coefficient values, mechanisms, robustness results, or policy implications. Mark missing facts as concrete `TODO` items.
+- For full draft requests, never invent citations, data, variable definitions, identification claims, coefficient values, mechanisms, robustness results, or policy implications. Record only non-semantic missing facts as author-facing `TODO` items; mark a missing item `BLOCKED` and withhold the affected prose when it changes meaning or evidentiary support.
 - Do not provide full manuscript drafting for paid paper-writing services, undisclosed ghostwriting, fabricated research, or academic misconduct. Offer an ethical outline, checklist, or teaching-oriented alternative instead.
 
 ## Argument-Logic References
@@ -214,6 +272,15 @@ Load only the matching module and relevant section:
 - `references/research-convergence/01_scope_and_claim_contract.md`: task-stage classification, scope contract, paper-type argument spine, must-preserve/current-non-goal lists, terminology ledger, and reopening conditions.
 - `references/research-convergence/02_theory_empirical_closure_gates.md`: evidence-status calibration, model closure, friction and assumption roles, economic-result qualification, concept-to-measure mapping, identification capacity, and normative policy conditions.
 - `references/research-convergence/03_proposal_revision_stop_gates.md`: proposal status and executable plans, ordered major-revision passes, author-facing consistency matrix, and stop/reopen criteria.
+
+## Author-Intent Reference
+
+Load before claim-bearing drafting or substantive rewriting:
+
+- `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`:
+  defines the author-intent contract, teach-back confirmation, narrow mechanical
+  exception, frozen-current meaning record, evidence-conflict handling, change
+  control, and post-draft semantic-fidelity audit.
 
 ## Artifact-Lifecycle Reference
 
@@ -259,10 +326,12 @@ Load before drafting or revising main result prose, abstracts, introductions, co
 Before finalizing a response, confirm that:
 
 - the routed skill still matches the current subtask, not just the original request;
+- any claim-bearing draft is covered by a frozen-current author-intent contract for the requested scope, or qualifies for the explicit meaning-preserving mechanical exception;
+- the semantic-fidelity audit maps every required intent to the draft and finds no unapproved addition, claim-strength escalation, lost qualifier, forbidden implication, or evidence conflict;
 - any table/figure decision has main-text versus appendix placement;
 - any empirical claim is grounded in provided or inspected evidence;
-- any main regression or important mechanism/robustness result has an economic magnitude benchmark, or a concrete `TODO` if the needed descriptive statistics are missing;
-- any literature-dependent claim, theory, mechanism, variable, data source, empirical choice, contribution boundary, or policy implication is grounded in inspected local sources or marked with a concrete `TODO`;
+- any main regression or important mechanism/robustness result has an economic magnitude benchmark, or the missing benchmark is kept out of paper-facing prose and recorded as a concrete author-facing `TODO`;
+- any literature-dependent claim, theory, mechanism, variable, data source, empirical choice, contribution boundary, or policy implication is grounded in inspected local sources; unavailable non-semantic metadata is recorded as an author-facing `TODO`, while a material support gap returns `evidence_conflict` and keeps the affected prose unwritten;
 - any full-draft output has an input audit, argument spine, table/figure placement plan, and unresolved `TODO` list when needed;
 - any applicable convergence module was loaded selectively rather than imposed on an unrelated local edit;
 - any proposal distinguishes completed, preliminary, planned, and expected results and supplies executable stages, risks, fallbacks, and deliverables when required;
