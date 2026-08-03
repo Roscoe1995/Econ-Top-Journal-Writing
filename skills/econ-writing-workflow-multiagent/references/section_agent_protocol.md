@@ -19,27 +19,48 @@ This protocol adds section-level specialization without letting chapters drift a
 Before assigning section agents, the controller must settle:
 
 - `paper_state`;
+- the stable workflow's one authoritative author-intent revision, with the exact
+  drafting scope `frozen-current + ready`;
+- content obligations and definition-registry entries for the section;
 - one-sentence paper spine;
 - contribution hierarchy;
 - table/figure placement plan;
 - artifact contract, accepted baseline, and cumulative length/depth dashboard when revising a mature draft;
 - stable source-block IDs and an initial conservation ledger;
 - target language and journal style;
-- missing facts and `TODO` items.
+- missing non-semantic facts and `TODO` items; semantic or evidence gaps retain
+  their blocking status.
 
 Then create a section map. No section agent should draft before receiving its section card.
+
+There is no compatibility exception that permits drafting from `partial`,
+`proposed`, unconfirmed, held, materially unresolved, or evidence-conflicted
+intent. If a section uncovers a material ambiguity, return it to the controller
+for author clarification instead of drafting a plausible interpretation.
 
 If a section needs table/figure, argument-logic, literature, diction, or empirical review, use `cross_agent_collaboration_protocol.md`. Section agents should request functional review through the controller rather than contacting functional agents directly.
 
 ## Section Card
 
 ```text
-section_id:
+card_id:
+section_id:  # legacy card-ID alias only; if present it must equal card_id
 section_name:
+baseline_section_id:  # mature draft, exact live manuscript section
+baseline_section_name:
+candidate_section_id:  # mature draft, must agree with validated ledger destination
+candidate_section_name:
 target_language:
 section_purpose:
 reader_question:
 paper_spine_link:
+author_intent_revision_id:
+author_intent_hash:
+intent_ids_to_realize:
+content_obligations:
+prohibited_claims_or_implications:
+definition_registry_slice:
+evidence_anchors:
 must_preserve:
 must_not_claim:
 inputs_to_read:
@@ -54,18 +75,41 @@ maximum_reduction_pct:
 minimum_depth_questions:
 must_remain_main:
 allowed_appendix_moves:
-ledger_slice:
-open_todos:
+ledger_slice:  # split cards only; exact live prose block IDs
+  baseline_block_ids:
+  destination_block_ids:
+qa_dependency_unit_ids:
+open_todos:  # non-semantic facts only
+blocking_statuses:
 ```
+
+For mature manuscripts, do not use `section_id` to identify manuscript
+sections. Use the explicit baseline/candidate selectors above. If a section is
+split across multiple cards, give every card a nonoverlapping `ledger_slice`
+and make the slices exactly cover the baseline section's live prose blocks.
+The deterministic conservation audit rejects ambiguous or double-counted
+split/merge attribution before a section agent may proceed.
 
 If cross-agent review changes evidence placement, contribution framing, claim strength, or empirical facts, the controller must update the section card before the section agent revises.
 
 ## Mature-Draft Rules
 
 - Default each mature-draft card to `patch_existing`. Use `reorder_existing_blocks` when the architecture pass requires movement without deletion.
-- Return patches or block moves instead of a replacement section unless the card explicitly authorizes `full_redraft`.
+- Under `patch_existing`, preserve the relative order of every baseline block
+  that remains mapped to main text; an unmapped insertion may be added without
+  being treated as a reorder. A card-level patch restriction also applies to
+  the mapped blocks in that card even when the artifact-wide mode permits
+  broader reordering.
+- Return patches or block moves instead of a replacement section unless the
+  artifact contract contains the author's recoverable `full_redraft`
+  authorization and exact scope, and the card inherits that rewrite mode.
+  A card may narrow top-level authority but cannot create or widen it;
+  controller preference alone cannot populate the approval record.
 - Give every source block a ledger disposition. Do not let a block disappear because the agent omitted it from newly generated prose.
-- Recommend an appendix move when appropriate, but execute it only when `allowed_appendix_moves` authorizes the object or the controller records approval.
+- Recommend an appendix move when appropriate, but execute it only when
+  the card's effective `allowed_appendix_moves` authorizes the section title or
+  exact source label and the ledger records recoverable, scoped user approval
+  for that exact move. Neither record substitutes for the other.
 - Keep a main-text replacement or summary for every appendix move that affects a central reader question.
 - Do not assume another section covers an omitted object without a verified destination in the section map and conservation ledger.
 - Treat length ranges and depth questions as guardrails. Do not add padding or preserve genuine repetition merely to hit a number.
@@ -224,6 +268,10 @@ section_agent:
 inputs_read:
 section_claim:
 draft_or_revision:
+intent_ids_realized:
+content_obligations_realized:
+definitions_introduced_or_used:
+evidence_anchors_used:
 must_preserve_check:
 words_before:
 words_after:
@@ -233,7 +281,8 @@ main_text_self_containment_check:
 approval_needed:
 conflicts_with_paper_state:
 handoff_to_next_section:
-remaining_todos:
+remaining_todos:  # non-semantic facts only
+blocking_statuses:
 ```
 
 ## Controller Integration Pass
@@ -246,7 +295,8 @@ After section agents return, the controller must check:
 - no section repeats another section's job;
 - tables and figures are cited only where they serve the argument;
 - caveats remain visible;
-- diction passes do not narrow or inflate claims.
+- the integrated draft is ready for deterministic manifest generation and
+  independent semantic review; section-agent self-checks are not acceptance QA;
 - every mature-draft source block has a ledger disposition and every executed appendix move was authorized;
 - section and cumulative word/page changes remain within the artifact contract;
 - the main text remains self-contained for the section's reader question.
@@ -254,3 +304,9 @@ After section agents return, the controller must check:
 Update the cumulative length/depth dashboard after every section return. If a section or the integrated manuscript crosses an approval trigger, stop further compression and send the candidate to the Main-Text Sufficiency and Conservation Role before continuing.
 
 If a section fails this check, return it to the relevant section agent with a narrowed revision card.
+
+After section integration, follow `exhaustive_semantic_qa_protocol.md`. Do not
+send a complete paper/proposal, document-level translation/compression, or major
+revision to diction until the substantive semantic gate passes. After diction,
+re-review changed and dependent units before the final conservation and
+main-text-sufficiency gate.

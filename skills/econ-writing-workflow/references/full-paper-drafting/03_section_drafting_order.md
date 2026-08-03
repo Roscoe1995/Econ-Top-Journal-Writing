@@ -36,8 +36,8 @@ Do not start with the abstract unless the evidence package and argument spine ar
 
 ## Language Branch
 
-- For English drafts, route prose sections through `econ-write`, then apply `references/english-diction/` when revising language.
-- For Chinese drafts, route prose sections through `cn-top-econ-writing`, then apply `references/chinese-diction/` when revising language.
+- For English drafts, route prose sections through `econ-write`, then apply `econ-write/references/english-diction/` when revising language.
+- For Chinese drafts, route prose sections through `cn-top-econ-writing`, then apply `cn-top-econ-writing/references/chinese-diction/` when revising language.
 - For all table, figure, note, and caption decisions, route through `econ-table-figure-design`.
 
 ## Drafting Discipline

@@ -93,14 +93,18 @@ and the post-draft semantic audit remain mandatory.
 
 ## 4. Minimum Contract Schema
 
-Use this minimum structure. Markdown, YAML, or another author-readable format
-is acceptable, but keep the fields and meanings stable.
+Use this minimum structure. JSON is consumed directly. A sole authoritative
+source in Markdown (`.md`/`.markdown`), YAML (`.yaml`/`.yml`), or plain text
+(`.txt`/`.text`) is acceptable through the confirmed JSON QA-view adapter
+defined by the multiagent protocol; version 1 does not accept an open-ended or
+`unknown` adapter format. Keep the fields and meanings stable.
 
 ```text
 schema_version: "1.0"
 intent_contract_id:
 intent_revision_id:
 intent_status: proposed | frozen-current | superseded
+gate_status: ready | clarification_required | evidence_conflict | fail
 scope:
   level: paper | section | passage
   target_path_or_artifact:
@@ -132,11 +136,11 @@ allowed_discretion:
 unresolved_material_questions:
 approval_record:
   confirmed_by:
-  confirmed_at:
-  confirmed_scope:
+  confirmed_at:  # ISO-8601 with timezone
+  confirmed_scope: complete | complete_author_intent | complete_author_intent_contract
   confirmation_source:
   freeze_authorized_by:
-  freeze_authorized_at:
+  freeze_authorized_at:  # same authorization event and timestamp as confirmation
   explicit_hold_reason:
 supersedes_intent_revision_id:
 superseded_by_intent_revision_id:
@@ -241,6 +245,11 @@ Only `ready` authorizes claim-bearing drafting. In any other state, stop the
 affected scope, explain the exact issue, and request the smallest needed
 decision. Do not use a `TODO`, tentative prose, or a plausible agent-selected
 interpretation to simulate authorization.
+
+Serialize the applicable `gate_status` in the current contract or its
+authoritative paper-state pointer. Deterministic QA preparation must reject a
+missing or non-`ready` gate before creating reviewer packets; it must not defer
+an unconfirmed-intent failure until after reviewers have spent context.
 
 ## 7. Writing Within The Contract
 

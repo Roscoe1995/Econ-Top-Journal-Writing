@@ -1,6 +1,6 @@
 ---
 name: econ-writing-workflow
-description: Use as the main entry point for economics writing workflows in English or Chinese, including paper and research-proposal planning, scope and claim convergence, full paper drafting from research questions and result packages, major revision and final audits, abstract/introduction/results revision, Chinese top-journal adaptation, English and Chinese diction cleanup, AI/translationese removal, table and figure design, notes/captions, formatting checks, and routing to empirical workflow support when data cleaning, regressions, or variable construction are involved.
+description: Use as the main entry point for economics writing workflows in English or Chinese, including paper and research-proposal planning, scope and claim convergence, full paper drafting from research questions and result packages, major revision, document-level translation or compression, exhaustive semantic QA and final audits, abstract/introduction/results revision, Chinese top-journal adaptation, English and Chinese diction cleanup, AI/translationese removal, table and figure design, notes/captions, formatting checks, and routing to empirical workflow support when data cleaning, regressions, or variable construction are involved.
 ---
 
 # Economics Writing Workflow
@@ -149,6 +149,27 @@ unapproved claim, strengthens association into causality, upgrades
 heterogeneity into mechanism evidence, broadens scope, drops a qualifier, or
 reintroduces a forbidden implication.
 
+For a complete paper or proposal, a document-level translation or compression,
+or a major manuscript revision, route the accepted draft through
+`econ-writing-workflow-multiagent` and its
+`econ-writing-workflow-multiagent/references/exhaustive_semantic_qa_protocol.md`
+reference before delivery. This is a
+mandatory heavy-QA route, not an invitation to reopen the frozen author intent
+or shorten the manuscript. It covers every reader-visible sentence in the body
+and appendix, including sentences inside footnotes, captions, and table or
+figure notes. The
+multiagent controller must use native independent reviewers and deterministic
+coverage/hash validation; a missing reviewer or unavailable independent-agent
+environment returns `audit_incomplete`, never a simulated pass.
+
+For a bounded local polish, audit only the changed sentences, their full
+paragraphs, adjacent context needed to interpret them, and any definitions or
+cross-section statements that depend on the change. Escalate to the heavy route
+when the edit changes the paper spine, claim type or strength, mechanism,
+definition, evidence boundary, scope, or material placement. A small context
+window limits reviewer input, not the length or substantive completeness of the
+manuscript.
+
 Pure spelling, punctuation, citation-format, layout, or grammar-only edits do
 not require the full intent-elicitation protocol when the author explicitly
 requires meaning preservation or the requested operation has one unambiguously
@@ -161,7 +182,20 @@ among substantively different meanings.
 
 ## First Decision
 
-Before writing or editing, classify the task stage as `exploration`, `proposal`, `full drafting`, `major revision`, `local polish`, or `final audit`. Do not load paper-wide convergence or final-audit checks for a bounded local edit unless a substantive contradiction blocks the requested change.
+Before writing or editing, classify the task stage as `exploration`, `proposal`,
+`full drafting`, `document translation`, `compression`, `major revision`,
+`major restructuring`, `local edit`, `local polish`, or `final audit`. Do not
+load paper-wide convergence or final-audit checks for a bounded local edit
+unless a substantive contradiction blocks the requested change.
+
+When handing a task to deterministic multiagent QA, map those human-facing
+labels exactly: `proposal -> proposal_draft`, `full drafting -> full_draft`,
+`document translation -> document_translation`, `compression ->
+document_compression`, `major revision -> major_revision`, `major
+restructuring -> major_restructure`, `local edit -> local_edit`, `local polish
+-> local_polish`, and `final audit -> final_audit`. Do not invent another
+machine stage or use a generic final-audit label to hide the underlying
+artifact mode.
 
 Task-stage classification never overrides the author-intent gate. A local
 substantive rewrite still requires confirmed meaning; only an explicitly or
@@ -182,6 +216,7 @@ Then classify the request:
 10. **Tables and figures**: table/figure admission, main-text versus appendix placement, three-line tables, regression/robustness/heterogeneity/mechanism tables, notes, captions, palettes, fonts, or export quality.
 11. **Empirical workflow**: data cleaning, variable construction, sample construction, regression code, estimation, diagnostics, or reproducibility.
 12. **Research convergence and proposal feasibility**: scope freezing, one-sentence research question, contribution hierarchy, current non-goals, model or identification closure, theory-to-measure mapping, proposal execution plans, cross-section consistency, or stopping a mature revision cycle.
+13. **Document transformation and exhaustive QA**: a complete manuscript or proposal, document-level translation or compression, major revision, deterministic sentence/unit coverage, independent semantic review, or final acceptance gating.
 
 If a request spans more than one category, handle them in this order:
 
@@ -192,13 +227,15 @@ If a request spans more than one category, handle them in this order:
 5. paper structure and section logic;
 6. full-paper drafting plan;
 7. prose and diction cleanup;
-8. final formatting/export checks.
+8. exhaustive semantic QA, post-diction semantic re-review, and final conservation when required;
+9. final formatting/export checks.
 
 ## Routing
 
 - For new claim-bearing prose, substantive rewriting, meaning-sensitive translation, section restructuring, or uncertainty about what the author wants to say or not say, first load `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`.
+- For a complete paper or proposal, document-level translation or compression, major revision, or exhaustive pre-delivery semantic audit, route to `econ-writing-workflow-multiagent` and load `econ-writing-workflow-multiagent/references/exhaustive_semantic_qa_protocol.md`. Do not use a sequential same-agent simulation as evidence that the independent-review gate passed.
 - For English paper prose, use `econ-write`.
-- For English diction cleanup, use `econ-write` and load `references/english-diction/` selectively.
+- For English diction cleanup, use `econ-write` and load `econ-write/references/english-diction/` selectively.
 - For full-paper logic, repeated material, emphasis, section ordering, and argument-spine audits, load `references/argument-logic/` selectively before polishing prose. Before drafting or revising abstracts, introductions, literature positioning, design, results, mechanisms, heterogeneity, contributions, or conclusions, load `references/argument-logic/06_draft_time_argument_clarity.md` so clarity is handled during generation, not only in the final audit.
 - For regression results, main findings, economic magnitude, coefficient interpretation, marginal effects, interaction net effects, log-to-percent conversions, or benchmark choices using means, standard deviations, percentiles, policy changes, or natural units, load `references/regression-results/01_economic_magnitude_interpretation.md` before drafting the relevant prose.
 - For literature-dependent drafting, closest-literature positioning, literature search/download decisions, source ledgers, citation grounding, theory/mechanism/variable alignment, or calibration of similar judgments from prior papers, load `references/literature-grounding/01_literature_and_judgment_grounding.md` before drafting the relevant prose.
@@ -209,8 +246,8 @@ If a request spans more than one category, handle them in this order:
 - For a general research proposal, executable research plan, paper-wide ordered revision, final consistency audit, or mature-draft stopping decision, load only the applicable sections of `references/research-convergence/03_proposal_revision_stop_gates.md`.
 - Do not load all research-convergence modules for local diction cleanup, a bounded paragraph rewrite, citation formatting, or a narrow table/figure note edit. Keep the requested scope unless a high-impact substantive contradiction prevents a responsible local answer.
 - For Chinese top-journal writing, use `cn-top-econ-writing`.
-- For target-journal submission style, anonymous manuscript checks, accepted-version formatting, references, appendices, or requests such as “按《经济学（季刊）》投稿要求调整”, use `cn-top-econ-writing` and its `references/journal-styles/` module. For 《经济学（季刊）》, load `references/journal-styles/00_journal_submission_workflow.md`, `references/journal-styles/economics_quarterly.md`, and when table/figure/appendix issues appear, `references/journal-styles/common_chinese_journal_rules.md`.
-- For Chinese diction cleanup, use `cn-top-econ-writing` and load `references/chinese-diction/` selectively.
+- For target-journal submission style, anonymous manuscript checks, accepted-version formatting, references, appendices, or requests such as “按《经济学（季刊）》投稿要求调整”, use `cn-top-econ-writing` and its `cn-top-econ-writing/references/journal-styles/` module. For 《经济学（季刊）》, load `cn-top-econ-writing/references/journal-styles/00_journal_submission_workflow.md`, `cn-top-econ-writing/references/journal-styles/economics_quarterly.md`, and when table/figure/appendix issues appear, `cn-top-econ-writing/references/journal-styles/common_chinese_journal_rules.md`.
+- For Chinese diction cleanup, use `cn-top-econ-writing` and load `cn-top-econ-writing/references/chinese-diction/` selectively.
 - For tables, figures, notes, captions, palettes, typography, and export checks, use `econ-table-figure-design`.
 - For data cleaning, regression code, variable construction, or estimation, pair with `empirical-econ-workflow`. Do not let this writing workflow invent or run empirical results by itself.
 
@@ -221,12 +258,13 @@ Do not route only once at the beginning of a long task. At the start of each sub
 Route immediately when these boundaries appear:
 
 - new claim-bearing prose, substantive rewriting, meaning-sensitive translation, section restructuring, or possible drift in claim meaning, strength, qualifiers, implications, or emphasis: load `references/author-intent/01_author_intent_contract_and_semantic_fidelity.md` before the language-specific writing skill;
+- complete-paper or complete-proposal drafting, document-level translation or compression, major revision, or final semantic acceptance: route to `econ-writing-workflow-multiagent` for deterministic manifest coverage plus independent semantic review; bounded local polish remains local unless it changes a substantive dependency;
 - tables, figures, maps, image edits, captions, legends, colorbars, fonts, export quality, or main-text versus appendix placement: use `econ-table-figure-design`;
 - abstracts, introductions, literature positioning, research design, results, mechanisms, heterogeneity, contributions, or conclusions where the wording depends on observable objects, comparison groups, design/results separation, mechanism evidence, contribution margins, or terminology stability: load `references/argument-logic/06_draft_time_argument_clarity.md`;
 - main regression results, mechanism or heterogeneity estimates, coefficient size, economic magnitude, marginal effects, interaction net effects, log-to-percent conversions, mean/SD/percentile comparisons, or policy benchmark interpretation: load `references/regression-results/01_economic_magnitude_interpretation.md`;
 - local reference papers, PDFs, `.bib` files, literature search/download, closest-literature positioning, data/theory/variable/mechanism alignment with prior papers, contribution boundaries, or claim-strength calibration: load `references/literature-grounding/01_literature_and_judgment_grounding.md`;
 - full drafting, proposal development, major restructuring, scope or terminology drift, theory/model closure, theory-to-measure mapping, normative policy claims, paper-wide revision, or final-audit stopping decisions: load only the matching `references/research-convergence/` file and section;
-- target-journal style, anonymous submission, title hierarchy, references, JEL codes, appendices, Word/PDF submission format, or 《经济学（季刊）》 rules: use `cn-top-econ-writing` and its `references/journal-styles/` module;
+- target-journal style, anonymous submission, title hierarchy, references, JEL codes, appendices, Word/PDF submission format, or 《经济学（季刊）》 rules: use `cn-top-econ-writing` and its `cn-top-econ-writing/references/journal-styles/` module;
 - data cleaning, variable construction, regression code, estimation, sample changes, or post-estimation sample audit: pair with `empirical-econ-workflow`;
 - English prose or English diction: use `econ-write`;
 - Chinese top-journal prose, Chinese diction, Chinese abstract, or Chinese contribution framing: use `cn-top-econ-writing`.
@@ -328,11 +366,13 @@ Before finalizing a response, confirm that:
 - the routed skill still matches the current subtask, not just the original request;
 - any claim-bearing draft is covered by a frozen-current author-intent contract for the requested scope, or qualifies for the explicit meaning-preserving mechanical exception;
 - the semantic-fidelity audit maps every required intent to the draft and finds no unapproved addition, claim-strength escalation, lost qualifier, forbidden implication, or evidence conflict;
+- any complete paper or proposal, document-level translation or compression, or major revision has a current exhaustive-QA report tied to the candidate and contract hashes; all reader-visible text is captured, every sentence/heading review target has the required roles, high-risk targets meet the contract's explicit independent-review minimum, and the final status is `pass` rather than `clarification_required`, `evidence_conflict`, `audit_incomplete`, `approval_required`, `fail`, or `metric_unavailable`;
+- any bounded local polish rechecks the changed sentences, their paragraph and necessary adjacent context, and affected definition or cross-section dependencies rather than claiming a paper-wide pass;
 - any table/figure decision has main-text versus appendix placement;
 - any empirical claim is grounded in provided or inspected evidence;
 - any main regression or important mechanism/robustness result has an economic magnitude benchmark, or the missing benchmark is kept out of paper-facing prose and recorded as a concrete author-facing `TODO`;
 - any literature-dependent claim, theory, mechanism, variable, data source, empirical choice, contribution boundary, or policy implication is grounded in inspected local sources; unavailable non-semantic metadata is recorded as an author-facing `TODO`, while a material support gap returns `evidence_conflict` and keeps the affected prose unwritten;
-- any full-draft output has an input audit, argument spine, table/figure placement plan, and unresolved `TODO` list when needed;
+- any full-draft output has an input audit, argument spine, table/figure placement plan, and an unresolved non-semantic `TODO` list when needed; semantic or evidence gaps retain `clarification_required` or `evidence_conflict` and keep the affected prose unwritten;
 - any applicable convergence module was loaded selectively rather than imposed on an unrelated local edit;
 - any proposal distinguishes completed, preliminary, planned, and expected results and supplies executable stages, risks, fallbacks, and deliverables when required;
 - any theory-to-empirical claim has a recoverable concept-to-measure link, and any normative policy claim states the relevant social-private wedge and implementation conditions;
