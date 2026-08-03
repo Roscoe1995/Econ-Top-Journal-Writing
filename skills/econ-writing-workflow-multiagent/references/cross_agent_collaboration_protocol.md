@@ -51,16 +51,28 @@ Flow:
 
 ### Literature Collaboration
 
-Use when a section needs contribution positioning, closest-literature grouping, claim strength, or citation grounding.
+Use when a section needs contribution positioning, closest-literature grouping,
+functional-cluster coverage, claim strength, citation grounding, or a change to
+the citation set.
 
 Flow:
 
 1. Section agent states the literature claim it wants to make.
-2. Controller asks the literature positioning agent to check support and margin.
-3. Literature agent returns the allowed claim, unsupported claim, source gap,
-   blocking evidence status, and only non-semantic citation-metadata TODOs.
-4. Controller updates the section card.
+2. Controller asks the literature coverage and citation-integrity role to check
+   the current contract, admitted inspected sources, support margin, and any
+   citation-integrity consequence.
+3. Literature role returns the allowed claim, unsupported claim, coverage gap,
+   source gap, registry/ledger inconsistency, blocking status, and only
+   non-semantic citation-metadata TODOs in a hash-bound structured finding.
+4. Controller updates the section card and, when authorized, the registry or
+   ledger authority; the reviewer never edits them directly.
 5. Section agent writes only the supported literature positioning.
+
+For a full paper/proposal, major revision/restructure, substantive literature
+change, or final audit with references, the bounded collaboration above does
+not replace the independent `literature-coverage-audit/1.0` acceptance result.
+That result remains outside the four semantic packet assignments and the fifth
+conservation assignment.
 
 ### Diction Collaboration
 
@@ -71,7 +83,10 @@ Flow:
 
 1. Section agent returns a structurally acceptable draft.
 2. Controller sends the draft to the diction/linter role.
-3. Diction role cleans prose but must preserve claims, caveats, variables, magnitudes, and table/figure references.
+3. Diction role cleans prose but must preserve claims, concrete evidence
+   boundaries, variables, magnitudes, and table/figure references. It may
+   consolidate no-information repeated disclaimers when the governing semantic
+   boundary remains satisfied.
 4. Controller regenerates the affected QA units and routes the changed and
    dependent set to independent semantic re-review.
 5. Only a current-hash validated pass establishes that polish did not narrow or
@@ -160,6 +175,11 @@ Trigger functional review when:
 - a functional agent proposes moving central data construction, sample audit, identification/model environment, main results, or core robustness discussion to the appendix;
 - any proposed relocation would cross a section or cumulative artifact-budget trigger;
 - a section wants to make a literature claim not grounded in inspected sources;
+- before drafting, a literature-triggering task lacks its coverage contract,
+  reference-library manifest, literature registry, or inspected evidence; or,
+  after a candidate exists, a draft/final acceptance step lacks its current
+  citation-integrity report, separate literature-audit assignment, or
+  independent literature-role result;
 - a section's contribution framing conflicts with the paper spine;
 - a diction pass may remove a mechanism, magnitude, caveat, or secondary contribution;
 - empirical details are missing or inconsistent.
@@ -178,8 +198,10 @@ record, specialist roles, and contract-declared independent-review coverage.
 - A section agent directly changes table/figure placement without controller approval.
 - A functional or section agent executes an unapproved core appendix move or treats appendix existence as sufficient main-text coverage.
 - A table/figure agent rewrites prose beyond its evidence and presentation scope.
-- A literature agent invents citations to support a section.
-- A diction agent removes caveats or magnitudes for smoothness.
+- A literature agent invents citations, edits the library/registry directly,
+  or treats a long bibliography as proof of coverage.
+- A diction agent removes a concrete evidence boundary or magnitude for
+  smoothness, or inserts the same defensive disclaimer after every table.
 - Two agents maintain separate versions of the paper state.
 - A semantic reviewer edits the manuscript, sees another first-pass verdict, or
   approves its own repair.
@@ -199,4 +221,9 @@ After a cross-agent loop, the controller must confirm:
   `TODO`;
 - the current manifest and finding hashes match the candidate and all required
   changed/dependency re-reviews are complete;
+- any triggered literature audit has a separate current assignment and is
+  bound to the current manuscript, coverage contract, library manifest,
+  registry, ledger, and deterministic report hashes and, in final mode, the
+  final-bibliography hash, and has no
+  blocking status;
 - the final user-facing output does not expose unnecessary internal agent chatter.

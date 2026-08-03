@@ -14,12 +14,12 @@ A structured framework for reviewing and auditing economics papers, inspired by 
 - States a concrete finding with a magnitude? (not "we find effects")
 - Follows the default 100-150 word target, unless a journal hard cap or contribution structure justifies otherwise?
 - Follows the 4-part formula: motivation, method, result, implication?
-- Preserves any secondary contribution, mechanism, key magnitude, data/design feature, and necessary caveat?
+- Preserves any secondary contribution, mechanism, key magnitude, data/design feature, and necessary caveat meaning without mechanically repeating its wording?
 - Opens with a fact or puzzle, not "This paper..."?
 
 **Introduction**:
 - Main result stated within the first 3 paragraphs?
-- Contribution structure preserved: main contribution, secondary contribution if emphasized, mechanism, design/data feature, and necessary caveat?
+- Contribution structure preserved: main contribution, secondary contribution if emphasized, mechanism, design/data feature, and any evidence boundary not already conveyed by calibrated wording or an adequate placement?
 - Literature woven into the argument (not a laundry list)?
 - Length between 3-5 pages?
 - Ends with a roadmap paragraph?
@@ -35,7 +35,7 @@ A structured framework for reviewing and auditing economics papers, inspired by 
 
 - [ ] Identification strategy explained in plain language before equations
 - [ ] Key identifying assumption stated and defended
-- [ ] Threats to validity listed and addressed (selection, omitted variables, reverse causality)
+- [ ] Threats that are substantively applicable to the paper's actual causal or identification claim are addressed in the design discussion; no generic threat inventory is repeated after every result
 - [ ] Standard errors account for clustering, heteroskedasticity, or serial correlation as needed
 - [ ] Robustness checks cover alternative specifications, samples, and definitions
 - [ ] If applicable: first-stage F-stat reported (IV), parallel trends shown (DiD), bandwidth sensitivity (RDD)
@@ -44,12 +44,14 @@ A structured framework for reviewing and auditing economics papers, inspired by 
 
 ### Reviewer 2: The Field Expert
 
-- [ ] Contribution clearly positioned relative to 3-5 closest papers
+- [ ] The focused contribution passage is positioned relative to a defensible closest/recent set; roughly 5-10 foregrounded papers, when useful, are not treated as the paper's complete reference ceiling
+- [ ] All applicable literature-coverage clusters are resolved, including theory/mechanism, data/measurement/institution, method/identification/model, contrary evidence/alternatives, and the recent frontier when applicable
+- [ ] Manuscript citekeys close through the authoritative library, admitted registry, text-to-evidence ledger, and final visible bibliography plus authorized `nocite`
 - [ ] Literature review is fair -- cites disagreeing work, not just supporting papers
 - [ ] Results are economically significant, not just statistically significant (effect sizes contextualized)
 - [ ] Institutional details accurate and sufficient for replication
 - [ ] Policy implications warranted by the evidence (no overclaiming)
-- [ ] External validity discussed honestly
+- [ ] External validity is discussed when the paper extrapolates beyond its evidence or would otherwise invite a materially broader reading; it is not added as a ritual disclaimer
 - [ ] Data sources described with enough detail to assess quality
 
 ### Reviewer 3: The Writing Critic

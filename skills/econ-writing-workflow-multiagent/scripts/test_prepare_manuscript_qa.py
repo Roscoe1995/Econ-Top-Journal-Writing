@@ -717,6 +717,25 @@ Price is $5 and elasticity is $\\beta<0$.
         self.assertIsNone(failed_manifest)
         self.assertIn("unclosed Markdown inline formula", failed.stderr)
 
+    def test_pandoc_markdown_citations_are_preserved_as_exact_audit_keys(self) -> None:
+        manuscript = self.write(
+            "pandoc-citations.md",
+            "# Results\n\n"
+            "Evidence follows [see @Smith2024, p. 3; @Li2025]. "
+            "@Jones2020 provides context. `[@Fake2099]` and "
+            "test@example.com are not citations.\n",
+        )
+        completed, manifest, _ = self.run_prepare(
+            manuscript, "out_pandoc_citations"
+        )
+        prepared = self.assert_prepared(completed, manifest)
+        keys = {
+            key
+            for unit in prepared["units"]
+            for key in unit.get("citation_keys", [])
+        }
+        self.assertEqual(keys, {"Smith2024", "Li2025", "Jones2020"})
+
     def test_tex_table_rows_cells_links_and_visible_multiargument_text_are_preserved(self) -> None:
         manuscript = self.write(
             "structured-tex.tex",

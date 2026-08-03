@@ -35,7 +35,17 @@ For table and figure tasks, use the separate `econ-table-figure-design` skill be
 
 For any manuscript-facing prose, do not include author workflow notes, draft-management explanations, submission-strategy discussion, or internal author-agent memo language. If a sentence explains why the author/agent moved, deleted, shortened, or framed something, keep it in an author memo rather than the paper.
 
-When drafting or revising literature-dependent prose, do not invent citations or reason from generic field memory. If the task depends on closest literature, theory, mechanisms, data sources, variable definitions, empirical specifications, contribution boundaries, or policy implications, route through `econ-writing-workflow` and its `references/literature-grounding/01_literature_and_judgment_grounding.md` module before writing. When the paper uses or adapts data, theory, variables, mechanisms, classifications, or empirical choices from reference papers, inspect the relevant source material and align terminology, construction, scope, and claim strength with those sources.
+When drafting or revising literature-dependent prose, do not invent citations or reason from generic field memory. If the task depends on closest literature, theory, mechanisms, data sources, variable definitions, empirical specifications, contribution boundaries, or policy implications, route through `econ-writing-workflow` and its `references/literature-grounding/01_literature_and_judgment_grounding.md` module before writing. For a full paper or proposal, major revision or restructure, substantive literature revision, project-specific coverage target, or final audit with references, also load `econ-writing-workflow/references/literature-grounding/02_literature_coverage_and_citation_integrity.md`. When the paper uses or adapts data, theory, variables, mechanisms, classifications, or empirical choices from reference papers, inspect the relevant source material and align terminology, construction, scope, and claim strength with those sources.
+
+If `econ-write` is entered directly for any of those paper-level literature
+triggers, route the task to `econ-writing-workflow-multiagent` before final
+acceptance. Require all three current-hash artifacts: the deterministic
+citation-integrity report, the independently assigned Literature Coverage and
+Citation Integrity Role result, and the gate-local pass from
+`validate_literature_audit.py`. A missing role, assignment, validator result,
+or current hash is `audit_incomplete`; loading a coverage reference alone is
+not acceptance. Pure spelling or wording that has never triggered a
+paper-level literature audit does not newly invoke this heavy route.
 
 When drafting or revising result prose that discusses coefficient size, route through `econ-writing-workflow` and its `references/regression-results/01_economic_magnitude_interpretation.md` module before final wording. Use that module to choose natural units, policy benchmarks, means, standard deviations, percentile spreads, marginal effects, interaction net effects, or log-to-percent conversions. Do not invent missing descriptive statistics.
 
@@ -74,9 +84,9 @@ Use short, common words. "Use" not "utilize." "Several" not "diverse." "People" 
 ## 8. Contribution Structure Diagnosis Before Rewriting
 Before rewriting an abstract, introduction, or conclusion, briefly classify the paper as one of: pure applied causal paper, descriptive measurement / stylized-facts paper, theory paper, mixed theory-empirical paper, structural/counterfactual paper, or policy/method paper.
 
-Then identify the main contribution; any secondary contribution; must-preserve mechanism; must-preserve empirical magnitude; must-preserve data/design feature; and must-preserve caveat or scope condition. If the user does not state these explicitly, infer them from the existing text and protect them during revision.
+Then identify the main contribution; any secondary contribution; must-preserve mechanism; must-preserve empirical magnitude; must-preserve data/design feature; and the semantic content of any necessary caveat or scope condition. If the user does not state these explicitly, route through the author-intent gate rather than silently inventing them.
 
-Compression rule: do not remove a claim if it is one of the paper's central contributions. If space is tight, compress the wording, not the contribution. After rewriting, compare the new version with the old version and restore any dropped central claim, mechanism, data/design feature, magnitude, caveat, or secondary contribution in compressed form.
+Compression rule: do not remove a claim if it is one of the paper's central contributions. If space is tight, compress the wording, not the contribution. After rewriting, compare the new version with the old version and restore any dropped central claim, mechanism, data/design feature, magnitude, caveat meaning, or secondary contribution in compressed form. Preserve the evidence boundary, but merge repeated caveat sentences that add no new scope or evidence information.
 
 ---
 
@@ -155,8 +165,8 @@ This is where the literature review belongs -- in the introduction, NOT as a sep
 
 **How to write it:**
 - It is a STORY, not an annotated bibliography. The narrative hinges on a "however" or "although" -- here is what others have done, here is what remains incomplete, here is how this paper addresses it (Dudenhefer)
-- Discuss only the 5-10 closest papers (closer to 5 is better)
-- For each paper, explain what they did AND what limitation remains -- do not just state their finding
+- In this focused positioning passage, foreground roughly 5-10 of the closest and most recent papers when that makes the contribution clear. This is not a cap on the paper's complete reference set
+- Explain the comparison margin that matters; do not force a formulaic criticism of every paper
 - Then describe approximately 3 contributions your paper makes:
   - Contribution to internal validity (better identification)
   - Contribution to external validity (new context, population)
@@ -274,7 +284,7 @@ Identify 1-2 specific, concrete directions:
 - Do NOT speculate beyond what the data or model show
 - Do NOT write your grant application here (Cochrane)
 - Do NOT say "I leave X for future research" (Cochrane) -- instead, describe concretely what the extension would look like
-- Do NOT add a separate "limitations" or "caveats" subsection in the conclusion -- the conclusion should project confidence in the findings, not undermine them. If limitations exist, they belong in the body of the paper near the relevant analysis
+- Do NOT add a separate "limitations" or "caveats" subsection in the conclusion. Put a specific limitation at its first genuinely necessary location in the body; repeat it only when the design, scope, evidence grade, or stand-alone format changes
 - If applied micro, consider framing the conclusion like a policy brief (Nikolov)
 
 ---
@@ -427,6 +437,13 @@ The three most important things: Identification, Identification, Identification.
 - For interactions, nonlinear models, and probability models, calculate net effects or marginal effects at meaningful values before writing the prose
 - If means, standard deviations, percentiles, or policy benchmarks are unavailable, ask for them, compute them from supplied data, or mark a concrete TODO instead of inventing them
 - Present results from most parsimonious to least parsimonious specification
+- Preserve evidence boundaries through accurate verbs, claim types, and the
+  minimum necessary scope condition. Do not append the same `not causal`,
+  `cannot be extrapolated`, or `cannot identify long-run effects` sentence to
+  every table, figure, or result paragraph under an unchanged design. Repeat a
+  caveat only after a material identification, sample, period, geography,
+  extrapolation, or evidence-grade change, or when a stand-alone note must be
+  self-contained
 
 ## Presenting Null Results
 - A null result IS a result. Frame it as informative, not as failure
@@ -441,8 +458,15 @@ The three most important things: Identification, Identification, Identification.
 - Do not include all determinants of Y as controls. Education's effect works partly through industry
 - Do not confuse instruments with controls
 - Do not claim causality without clearly explaining your identification strategy
-- Do not ignore reverse causality
-- Always address: (i) reverse causality, (ii) unobserved heterogeneity, (iii) measurement error
+- If the author-confirmed design does not support causal identification but the
+  requested sentence asserts a causal effect, return `evidence_conflict` and
+  leave that causal prose unwritten. Do not disguise this semantic conflict as
+  a conservative rewrite or `[TODO]` placeholder.
+- For a causal claim, identify and address the threats that are substantively
+  plausible for the actual design, such as reverse causality, unobserved
+  heterogeneity, or measurement error. Do not mechanically list all three when
+  they do not apply, and do not repeat the same threat inventory after every
+  result under an unchanged design
 
 ## Heterogeneity Analysis
 - Present heterogeneity results AFTER the main result, not before
@@ -489,6 +513,9 @@ The three most important things: Identification, Identification, Identification.
 - Distinguish between working paper versions and published versions -- findings sometimes change between versions
 - Do NOT cite papers you have not read. If you know a paper only through secondary citations, cite the secondary source: "as discussed in [secondary source]"
 - For well-known results (e.g., Mincer returns, gravity equation), cite the original source, not a textbook or survey
+- For paper-level work, use one `reference-library-manifest/1.0` as the metadata authority, a `literature-registry/1.0` for candidate/inspected/admitted/rejected/superseded decisions, and the existing `text_to_evidence_ledger` for claim-to-source links
+- Derive the final visible bibliography from manuscript citekeys plus explicitly authorized `nocite` items. Unused entries may remain in the source `.bib`; they are not an error unless they leak into the final visible bibliography without citation or authorization
+- Use a `literature-coverage-contract/1.0` to cover the applicable closest-work, theory/mechanism, data/measurement/institution, method/identification/model, contrary-evidence/alternative-explanation, and recent-frontier clusters. There is no skill-wide minimum source count; enforce a project target only when its author, journal, or comparable-paper provenance is recorded
 
 ## Replication Packages (AEA Data Editor Standards)
 - Every empirical paper submitted to AEA journals (and increasingly other journals) must include a replication package
@@ -578,8 +605,8 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 4. **Theoretical Framework** (optional; only if it adds to understanding the empirics)
 5. **Data and Descriptive Statistics** (answer all questions about the data)
 6. **Empirical Framework** (estimation strategy + identification strategy)
-7. **Results and Discussion** (main results, robustness, mechanisms, limitations)
-8. **Conclusion** (summary, limitations, policy implications, future research)
+7. **Results and Discussion** (main results, robustness, mechanisms, and specific interpretation boundaries where genuinely needed)
+8. **Conclusion** (summary, policy implications, future research, and no formulaic limitations inventory)
 9. **References**
 10. **Appendix / Online Supplement** (robustness checks, proofs, extra tables)
 
@@ -665,7 +692,7 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 3. Fix passive voice, vague language, throat-clearing, buried leads
 4. Tighten prose -- cut unnecessary words and sentences
 5. Ensure concrete results are stated with magnitudes
-6. Preserve the author's meaning, main contribution, strategically important secondary contribution, mechanism, data/design feature, magnitude, and necessary caveat
+6. Preserve the author's meaning, main contribution, strategically important secondary contribution, mechanism, data/design feature, magnitude, and necessary caveat meaning; merge repeated caveat wording when the evidence boundary is unchanged
 7. Compare the rewrite with the original and restore any dropped central claim in compressed form
 8. Briefly note what you changed and why
 
@@ -679,9 +706,10 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 ## When asked to write a LITERATURE REVIEW:
 1. Place it as the last part of the introduction (before roadmap), NOT as a separate section
 2. Tell a STORY, not an annotated bibliography
-3. Focus on 5-10 closest papers
+3. In the focused positioning passage, foreground roughly 5-10 of the closest and most recent papers; do not treat this as the paper's total reference ceiling
 4. Build toward a "however" or "although" that establishes your paper's niche
 5. Be generous with credit, never insulting
+6. Check all applicable functional clusters under the project's literature-coverage contract; a high citation count cannot substitute for a missing cluster
 
 ## When asked to write an ABSTRACT:
 1. Follow the 4-part formula: What/How/Findings/Implications
@@ -695,15 +723,20 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 2. Keep it to one page
 3. Phrase findings differently from abstract and introduction
 4. Do not speculate beyond the data or model
-5. Do not add a formulaic limitations section; preserve necessary scope, causality, or interpretation caveats in substantive prose
+5. Do not add a formulaic limitations section. Add a specific scope,
+   causality, or interpretation boundary in the conclusion only when the
+   conclusion's own wording would otherwise create a materially stronger
+   reading; calibrated conclusion language plus an adequate earlier placement
+   does not require another disclaimer
 
 ## When asked to write RESULTS:
 1. Main result first -- no warmup exercises
 2. Most parsimonious to least parsimonious specifications
 3. Explain economic magnitude, not just statistical significance; use `econ-writing-workflow`'s regression-results module when choosing the benchmark
-4. Include robustness checks, mechanisms, and limitations subsections
+4. Include robustness and mechanism analysis when they serve distinct evidentiary roles; do not create a default limitations subsection
 5. Use visuals before tables for preliminary results
 6. For null results: frame as informative, report confidence intervals, discuss power
+7. State a specific evidence boundary once when first needed, and repeat it only after a material design or scope change or in a stand-alone note
 
 ## When asked to write a THEORY or MODEL section:
 1. The introduction must state the main insight/mechanism in plain English within the first two paragraphs
@@ -797,13 +830,15 @@ Before submitting, verify:
 - [ ] No passive voice in prose (search for "is" and "are"; passive acceptable in table captions and methods)
 - [ ] No throat-clearing before the main point
 - [ ] Literature review tells a story, not a list
+- [ ] Focused literature positioning does not treat 5-10 papers as a cap on the complete reference set, and all applicable coverage clusters are resolved
 - [ ] Every table has a self-contained caption with clustering/SE specification
 - [ ] Every number in tables is discussed in text
 - [ ] Standard errors reported for every important number
 - [ ] Identification strategy is clearly explained in economic terms
 - [ ] Conclusion avoids a formulaic caveats section but preserves necessary scope, causality, or interpretation limits
+- [ ] The same defensive caveat is not repeated after unchanged tables, figures, or result paragraphs; any repeat corresponds to a material scope/evidence change or a stand-alone requirement
 - [ ] Abstract is concrete and follows the default 100-150 word target unless the journal imposes a hard cap or the paper type justifies 150-180 words
-- [ ] Abstract/introduction/conclusion rewrites preserve the main contribution, any strategically important secondary contribution, mechanism, key magnitudes, data/design feature, and necessary caveats
+- [ ] Abstract/introduction/conclusion rewrites preserve the main contribution, any strategically important secondary contribution, mechanism, key magnitudes, data/design feature, and necessary caveat meanings while merging redundant repetitions
 - [ ] Paper is under 40 pages (check target journal guidelines)
 - [ ] All Greek letters and notation are defined with names
 - [ ] No "illustrative" empirical work
@@ -813,6 +848,7 @@ Before submitting, verify:
 - [ ] Mechanisms section tests channels rather than speculates
 - [ ] Data availability and replication information are clearly stated
 - [ ] Appendix items are all referenced from the main text
+- [ ] Every manuscript citekey resolves to an admitted library entry, and the final visible bibliography contains only cited plus explicitly authorized `nocite` items
 - [ ] Title is under 15 words and contains the treatment and outcome (or key mechanism for theory)
 - [ ] For theory papers: main propositions have clear economic intuition before formal proofs
 - [ ] Descriptive statistics table included with variable definitions in notes

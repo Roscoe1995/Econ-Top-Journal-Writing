@@ -58,6 +58,54 @@ heterogeneity_results:
 robustness_results:
 literature_positioning:
 scope_conditions_and_caveats:
+caveat_placement_registry:  # optional derived placement/de-duplication index; never a second intent authority
+  status: not_required | pending_candidate | current | stale
+  path:
+  sha256:
+  author_intent_revision_id:
+  author_intent_sha256:
+  manuscript_sha256:
+literature_coverage:  # required only when the literature audit trigger applies
+  trigger_status:
+  coverage_contract:
+    path:
+    sha256:
+  reference_library_manifest:
+    path:
+    sha256:
+  literature_registry:
+    path:
+    sha256:
+  citation_integrity_report:
+    status: not_triggered | pending_candidate | current | stale | blocking_status
+    path:
+    sha256:
+  literature_audit_assignment:
+    status: not_triggered | pending_candidate | assigned | stale | blocking_status
+    schema_id: literature-audit-assignment/1.0
+    path:
+    sha256:
+    assignment_id:
+    core_qa_assignment_registry_sha256:
+  bibliography_build_attestation:  # required in final mode
+    schema_id: bibliography-build-attestation/1.0
+    status: not_triggered | pending_build | current | stale | blocking_status
+    path:
+    sha256:
+  visible_bibliography:  # final mode
+    path:
+    sha256:
+  literature_role_audit:
+    status: not_triggered | pending_candidate | current | stale | blocking_status
+    path:
+    sha256:
+    gate_status:
+  literature_acceptance_validation:
+    status: not_triggered | pending_candidate | current | stale | blocking_status
+    schema_id: literature-audit-validation/1.0
+    path:
+    sha256:
+    gate_local_status:
 artifact_contract:
   section_cards:  # canonical length/depth records; do not duplicate as section_budgets
   content_obligations:
@@ -110,6 +158,42 @@ last_updated_by:
   a live, hash-bound `evidence-registry/1.0` named by
   `qa_contract.evidence_registry_source`; paper state and manifests may project
   its IDs but may not invent or override that authority.
+- Treat `caveat_placement_registry` as an optional presentation and
+  de-duplication index derived after a candidate draft exists. Before then,
+  record only `pending_candidate`; do not fabricate unit IDs. Bind a current
+  registry to the live manuscript hash and authoritative author-intent
+  revision/hash. Every entry uses the canonical `caveat_id`, `intent_id`,
+  optional `content_obligation_ids`, `first_required_location`,
+  `satisfied_by_unit_ids`, and `permitted_repeat_triggers` fields. Every listed
+  obligation must trace to that intent. Rebuild it whenever manuscript unit IDs
+  change. It cannot weaken or create an evidence boundary or
+  mutate the frozen author contract. A calibrated verb or claim type may
+  satisfy the intent without a standalone disclaimer; deleting no-information
+  repeated wording does not erase the governing intent.
+- When the literature trigger applies, resolve all three literature authority
+  pointers to the live `literature-coverage-contract/1.0`,
+  `reference-library-manifest/1.0`, and `literature-registry/1.0` objects. The
+  library manifest alone owns bibliographic metadata; the registry owns
+  candidate/inspected/admitted/rejected/superseded status; the existing
+  `text_to_evidence_ledger` owns claim and unit links and must include citekeys
+  and reader-visible unit IDs; the final visible bibliography is derived from
+  manuscript citekeys plus authorized `nocite` entries.
+  The coverage contract must explicitly declare each standard functional
+  cluster as applicable or inapplicable and bind the current library-manifest
+  and registry hashes; an empty or partial declaration is
+  `audit_incomplete`. In final mode, also keep a current
+  `bibliography-build-attestation/1.0` pointer before accepting the visible
+  bibliography.
+- Keep literature audit state outside `qa_contract.required_roles` and the
+  five-role assignment registry. Pre-register a separate, hash-bound
+  `literature-audit-assignment/1.0` so the native reviewer identity, task,
+  independence, dispatch time, and exact inputs remain auditable without
+  changing the core assignment schema. Missing or stale assignment/output is
+  `audit_incomplete`; coverage gaps are `fail`; unsupported claims are
+  `evidence_conflict`; unauthorized `nocite` is `approval_required`; and
+  unmeasurable formats are `metric_unavailable`. Any manuscript byte change
+  makes the prior deterministic report and role output stale. Do not set
+  literature status to pass from controller judgment alone.
 
 ## QA State
 

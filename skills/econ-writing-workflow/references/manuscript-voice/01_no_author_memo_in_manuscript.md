@@ -91,7 +91,28 @@ These phrases are not automatically forbidden. Use them only when they introduce
 - `本文不再赘述` / `不再展开`: acceptable only for genuinely standard derivations or previously established definitions, and usually better as a concise cross-reference.
 - `完整结果见附录`: acceptable when it names the concrete appendix/table/figure and the appendix contains reader-relevant robustness or derivation. Avoid vague appendix dumping.
 - `不是……而是……`: acceptable for conceptual distinction, model scope, or interpretation boundary. Avoid using it to defend a writing choice.
-- `本文不把……解释为因果效应`: acceptable when it clarifies identification scope. Keep the object specific.
+- `本文不把……解释为因果效应`: acceptable when it clarifies a material identification scope at the first genuinely necessary location. Keep the object specific and do not repeat the sentence after every result under the same design.
+
+## Caveat Placement Discipline
+
+Reader-facing evidence boundaries are not author memos, but repetitive
+defensive prose still weakens the manuscript. Prefer an accurate verb, claim
+type, and local scope condition. Add a separate limitation only when the
+reader could otherwise materially misread the evidence.
+
+State the same limitation once when it first matters. Repeat it only when the
+identification, sample, period, geography, extrapolation target, or evidence
+grade changes; when the text actually discusses long-run, welfare, or
+external-validity conclusions; when a stand-alone abstract, caption, table or
+figure note must be self-contained; or when a journal or referee requires it.
+Do not create a mechanical per-section quota, and do not add `not causal`,
+`cannot be extrapolated`, or `cannot identify long-run effects` merely because
+a new table or figure appears.
+
+Removing a later repetition is a redundancy edit, not a change in author
+intent, when the retained wording still conveys the full boundary for the
+affected claims. If the evidence boundary has actually changed, state the new
+specific condition rather than copying a generic disclaimer.
 
 ## Rewrite Rules
 
@@ -116,3 +137,8 @@ For each hit, decide:
 - **Keep** if it is a reader-facing definition, scope condition, cross-reference, or identification caveat.
 - **Rewrite** if the economics point is valid but phrased as a drafting choice.
 - **Move** if it belongs in an author memo or task log.
+
+For repeated caveat hits, also compare identification, sample, period,
+geography, extrapolation target, and evidence grade with the first adequate
+statement. Keep a repeat only when at least one material condition changed or
+the object must stand alone.

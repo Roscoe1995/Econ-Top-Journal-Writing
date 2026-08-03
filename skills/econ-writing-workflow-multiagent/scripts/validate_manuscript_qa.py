@@ -178,9 +178,9 @@ ROLE_PROTOCOLS: dict[str, dict[str, Any]] = {
         "criterion_definitions": {
             "economic_logic": "Check actor, constraint, behavior, outcome, and equilibrium or institutional links; flag missing steps.",
             "mechanism_authorization": "Check that mechanism statements are authorized and distinct from heterogeneity or suggestive interpretation.",
-            "scope_conditions": "Check population, period, geography, domain, uncertainty, caveats, and exceptions.",
+            "scope_conditions": "Check whether population, period, geography, domain, uncertainty, caveats, and exceptions are accurate and stated only where they materially change interpretation; flag both missing boundaries and unchanged no-information repetition.",
             "comparison_direction": "Check comparison group or model benchmark, sign/direction, sequence, and timing.",
-            "qualifier_preservation": "Check negation, uncertainty, scope qualifiers, and the separation of association, causality, heterogeneity, and mechanism evidence.",
+            "qualifier_preservation": "Check that negation, uncertainty, scope qualifiers, and association/causality/heterogeneity/mechanism distinctions remain semantically intact after consolidation; calibrated verbs may satisfy the boundary without a standalone disclaimer.",
         },
     },
 }

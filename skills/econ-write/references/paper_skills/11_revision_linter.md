@@ -1,7 +1,7 @@
 ---
 purpose: "Provide a checklist-style linter for revising economics paper prose and structure."
 applies_to: "Revision passes, section audits, manuscript linting, and final pre-submission checks."
-last_updated: "2026-05-13"
+last_updated: "2026-08-03"
 used_by: "paper_skills"
 ---
 
@@ -18,7 +18,9 @@ Before accepting a rewrite, answer:
 - Did it preserve the paper's mechanism?
 - Did it preserve key magnitudes?
 - Did it preserve necessary data/design features?
-- Did it preserve necessary caveats about causality, scope, or interpretation?
+- Did it preserve the semantic boundary of every necessary caveat about
+  causality, scope, or interpretation while merging repetitions that add no
+  new scope or evidence information?
 - Did concision improve clarity without narrowing the paper's intellectual claim?
 
 If any answer is no, revise again. Compress wording, not the contribution.
@@ -45,10 +47,13 @@ After rewriting, compare the new version with the old version. List any dropped:
 - data source or data object;
 - magnitude or economic significance;
 - identification or design feature;
-- caveat or scope condition;
+- caveat meaning or scope condition;
 - contribution sentence.
 
-Restore dropped items that are central or strategically important. Items may be restored as clauses rather than full sentences.
+Restore dropped items that are central or strategically important. Items may
+be restored as clauses rather than full sentences. Do not restore an identical
+defensive sentence when calibrated wording or the first adequate location
+still covers the affected claims.
 
 ## 4. Concision Check
 
@@ -82,8 +87,22 @@ Concise does not mean strategically incomplete.
 ## 7. Conclusion-Specific Linter
 
 - The conclusion restates the finding in new language.
-- It preserves necessary scope, causality, or interpretation caveats without adding a formulaic limitations section.
+- It preserves necessary scope, causality, or interpretation meaning without
+  adding a formulaic limitations section. The conclusion repeats a boundary
+  only when its own wording would otherwise be materially stronger; an
+  adequate body placement plus calibrated conclusion wording is sufficient.
 - It does not add new results, unsupported implications, or generic future-work filler.
+
+## 7A. Caveat-Repetition Linter
+
+- Prefer accurate claim types, calibrated verbs, and the minimum necessary
+  scope condition over separate disclaimer sentences.
+- Under an unchanged identification, sample, period, geography, extrapolation
+  target, and evidence grade, state a specific caveat at its first genuinely
+  necessary location and merge later repetitions.
+- Repeat only after a material boundary change, in a stand-alone abstract,
+  caption, table or figure note, or under a journal or referee requirement.
+- Do not enforce a per-section minimum or maximum caveat count.
 
 ## 8. Minimal User-Facing Summary
 

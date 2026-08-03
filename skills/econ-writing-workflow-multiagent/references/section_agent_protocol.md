@@ -22,6 +22,11 @@ Before assigning section agents, the controller must settle:
 - the stable workflow's one authoritative author-intent revision, with the exact
   drafting scope `frozen-current + ready`;
 - content obligations and definition-registry entries for the section;
+- the optional frozen caveat-placement policy slice and, for an existing
+  candidate only, its current derived registry slice, distinguishing semantic
+  boundary preservation from repeated disclaimer wording;
+- literature coverage, library, registry, and audit pointers when the
+  literature trigger applies;
 - one-sentence paper spine;
 - contribution hierarchy;
 - table/figure placement plan;
@@ -61,6 +66,9 @@ content_obligations:
 prohibited_claims_or_implications:
 definition_registry_slice:
 evidence_anchors:
+caveat_placement_policy_slice:
+caveat_placement_registry_slice:
+literature_coverage_contract_slice:
 must_preserve:
 must_not_claim:
 inputs_to_read:
@@ -128,7 +136,9 @@ Must preserve:
 - main result or proposition;
 - mechanism if it is part of the contribution;
 - key data/design feature;
-- necessary caveat.
+- any concrete caveat necessary for standalone interpretation; do not append a
+  generic disclaimer when calibrated claim language already preserves the
+  evidence boundary.
 
 Must not:
 
@@ -147,7 +157,8 @@ Must preserve:
 - main result and magnitude when available;
 - mechanism;
 - contribution relative to literature;
-- boundary conditions.
+- boundary conditions that materially change interpretation; consolidate a
+  boundary already stated under unchanged scope instead of repeating it.
 
 Must not:
 
@@ -155,9 +166,10 @@ Must not:
 - turn literature review into a citation list;
 - let background crowd out the research question.
 
-### Literature Positioning Agent
+### Literature Coverage And Positioning Agent
 
-Purpose: organize close literature by contribution margin.
+Purpose: organize close literature by contribution margin while realizing the
+applicable clusters in the literature-coverage contract.
 
 Must preserve:
 
@@ -165,8 +177,13 @@ Must preserve:
 - what each literature explains;
 - what margin this paper adds;
 - limits of claim strength when sources are missing.
+- recent, theory/mechanism, data/measurement/institution,
+  method/identification/model, and contrary/alternative clusters marked
+  applicable by the contract.
 
-Must not invent citations or claim "first" unless verified.
+Must not invent citations, treat five to ten foregrounded papers as the full
+reference ceiling, or claim "first" unless verified. This drafting agent does
+not replace the independent Literature Coverage and Citation Integrity Role.
 
 ### Theory And Mechanism Agent
 
@@ -193,7 +210,9 @@ Must preserve:
 - treatment or key variable;
 - comparison group or model object;
 - fixed effects, controls, clustering, and sample restrictions when known;
-- identification caveat.
+- a concrete identification assumption or limitation when omission would
+  change the effective claim; do not repeat a generic non-causal disclaimer
+  after every result under the same design.
 
 Must not invent estimation details or overstate causality.
 
@@ -255,7 +274,8 @@ Must preserve:
 
 - central finding;
 - mechanism or theoretical takeaway;
-- boundary conditions;
+- boundary conditions only when they materially affect the conclusion and have
+  not already been adequately concentrated elsewhere;
 - policy or research implication supported by the paper.
 
 Must not introduce new evidence, new literature, or unsupported policy claims.
@@ -294,7 +314,13 @@ After section agents return, the controller must check:
 - main contribution and secondary contribution are preserved;
 - no section repeats another section's job;
 - tables and figures are cited only where they serve the argument;
-- caveats remain visible;
+- concrete evidence boundaries remain semantically preserved, while
+  no-information repeated defensive disclaimers are consolidated under the
+  frozen caveat-placement policy and, once candidate unit IDs exist, the
+  derived registry rather than restored mechanically;
+- when literature audit is triggered, the coverage contract, library,
+  registry, ledger, manuscript citekeys, and audit hashes are current and the
+  independent literature role has no blocking status;
 - the integrated draft is ready for deterministic manifest generation and
   independent semantic review; section-agent self-checks are not acceptance QA;
 - every mature-draft source block has a ledger disposition and every executed appendix move was authorized;
