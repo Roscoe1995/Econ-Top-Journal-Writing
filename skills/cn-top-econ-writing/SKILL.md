@@ -156,7 +156,7 @@ description: Use when drafting, auditing, restructuring, polishing, or adapting 
 
 当用户指定目标中文期刊，或要求按某一期刊投稿要求调整、投稿前格式检查、匿名稿检查、录用后排版、正文/附录取舍或参考文献体例适配时，先读取 `references/journal-styles/00_journal_submission_workflow.md`。
 
-目标期刊为《经济学（季刊）》或 China Economic Quarterly 时，继续读取 `references/journal-styles/economics_quarterly.md`；涉及跨页表、图形清晰度、中文图中文字、正文图准入、附录引用和变量命名时，同时读取 `references/journal-styles/common_chinese_journal_rules.md`。
+目标期刊为《经济学（季刊）》或 China Economic Quarterly 时，继续读取 `references/journal-styles/economics_quarterly.md`；涉及中文顶刊通用匿名审稿 Word 底盘、跨页表、图形清晰度、中文图中文字、正文图准入、附录引用和变量命名时，同时读取 `references/journal-styles/common_chinese_journal_rules.md`。
 
 期刊体例规则的优先级固定为：官网硬性投稿要求 > 用户明确确认过的投稿实操流程 > 目标期刊已发表论文中的稳定体例 > 中文期刊共同规则 > 本 skill 的一般中文顶刊写作规则。不要用单篇样例风格覆盖官网硬性要求。
 
