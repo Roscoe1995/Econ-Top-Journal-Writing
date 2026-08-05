@@ -93,10 +93,24 @@ Concise does not mean strategically incomplete.
   adequate body placement plus calibrated conclusion wording is sufficient.
 - It does not add new results, unsupported implications, or generic future-work filler.
 
-## 7A. Caveat-Repetition Linter
+## 7A. Caveat Admission And Repetition Linter
 
 - Prefer accurate claim types, calibrated verbs, and the minimum necessary
   scope condition over separate disclaimer sentences.
+- Apply the admission test to the first or only stand-alone negative caveat,
+  not only to repeated wording. Identify the exact claim or number it limits
+  and the concrete materially stronger reading it prevents.
+- First state affirmatively what the estimate, threshold, scenario, or model
+  object represents and what interpretation it supports. `Affirmative` means
+  explanatory, not favorable; do not strengthen the evidence.
+- If calibrated wording already blocks the misreading, delete the negative
+  sentence. Treat a new outcome or estimand introduced only in negation as
+  strong evidence for deletion; retain the contrast only when a concrete
+  material misreading remains. Bind any retained distinction to the exact
+  object and use a separate negative sentence only as a last resort.
+- A linter or writing agent may recommend that last resort but cannot authorize
+  it. Unless the exact negative proposition is already frozen by the author,
+  return `clarification_required` and withhold it from manuscript prose.
 - Under an unchanged identification, sample, period, geography, extrapolation
   target, and evidence grade, state a specific caveat at its first genuinely
   necessary location and merge later repetitions.

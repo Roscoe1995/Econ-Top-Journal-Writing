@@ -590,15 +590,31 @@ uncertainty, caveats, and the distinction between association, causality,
 heterogeneity, and mechanism evidence.
 
 Check both missing and excessive boundary language. Preserve every concrete
-identification assumption and scope condition, but do not require the same
-non-causal, non-extrapolation, or no-long-run disclaimer after each table,
-figure, or result paragraph. Calibrated verbs and claim type may fully preserve
-the boundary. Repeat a caveat only for a changed method, sample, period,
-geography, extrapolation target, or evidence level; standalone readability; or
-an explicit journal/referee requirement. Do not enforce a per-section count or
-invent a long-run limitation when no long-run claim is made.
+identification assumption and scope condition, but do not require a first,
+unique, or repeated non-causal, non-extrapolation, or no-long-run disclaimer
+after a table, figure, or result paragraph. Calibrated verbs and claim type may
+fully preserve the boundary.
 
-Use role-protocol version `1.0` and these exact criterion IDs:
+For every stand-alone negative caveat, including its first occurrence, identify
+the exact preceding claim, number, estimate, threshold, scenario, or model
+object it limits; the concrete materially stronger reading it blocks; whether
+calibrated wording already blocks that reading; whether it introduces a new
+outcome or estimand only to deny it; and whether affirmative interpretation can
+state what the object is, what it measures, and what it shows. `Affirmative`
+means explanatory rather than favorable and must not strengthen the evidence.
+If no material misreading remains, flag the sentence for deletion or
+affirmative rewrite. If a negative contrast remains necessary, bind it to the
+exact object and use a separate sentence only as a last resort. A reviewer may
+recommend that last resort but cannot authorize it: `pass + keep` requires the
+exact unit to match a frozen author-intent proposition. Otherwise return
+`needs_author` with `requires_author_action=true`.
+
+Repeat a caveat only for a changed method, sample, period, geography,
+extrapolation target, or evidence level; standalone readability; or an explicit
+journal/referee requirement. Do not enforce a per-section count or invent a
+long-run limitation when no long-run claim is made.
+
+Use role-protocol version `1.4` and these exact criterion IDs:
 
 - `author_intent_coverage`: `intent_coverage`, `unauthorized_claim`,
   `prohibited_implication`, `qualifier_fidelity`;
@@ -609,6 +625,46 @@ Use role-protocol version `1.0` and these exact criterion IDs:
 - `economic_logic_scope_qualifiers`: `economic_logic`,
   `mechanism_authorization`, `scope_conditions`, `comparison_direction`,
   `qualifier_preservation`.
+
+When a unit carries the lexical routing flag `negative_caveat_candidate`, its
+`scope_conditions` review uses the direct `evidence` object required by
+`negative-caveat-admission/1.0`. It records the candidate classification,
+bounded claim or quantity, concrete material misreading, whether affirmative
+wording already covers the boundary, whether a new object appears only in
+negation, an affirmative explanation, the remaining necessity of a standalone
+negative sentence and its reason, the classification reason, and the
+recommended disposition. `Affirmative` means explanatory, not favorable, and
+must never strengthen the evidence. A lexical false positive is classified as
+`not_a_caveat`: caveat-only text fields are null and its `scope_conditions`
+verdict remains free to report any separate scope finding in the same sentence.
+For a standalone caveat, the classification reason, bounded object, concrete
+misreading, affirmative explanation, and necessity reason must perform their
+distinct functions rather than repeat copied filler; at least four normalized
+text values must differ.
+The validator checks completeness, standard sentinel values, internal
+consistency, hashes, and authority binding; the lexical flag and Python code do
+not decide whether free text is semantically adequate. The five narrative
+fields are evidence, not permission. A `keep` record may pass only when the
+exact reader-visible unit matches a proposition from the frozen
+`author_intent_contract`. Without that binding it must use `needs_author` and
+`requires_author_action=true`, which yields `clarification_required` rather
+than manuscript acceptance.
+
+Author adjudication changes authority, not just the verdict field. If the
+author approves the exceptional sentence, record the exact reader-visible unit
+as a new or superseding frozen `propositions[].must_express` entry with its own
+intent ID and updated confirmation, revision, and hash; then regenerate the
+manifest and packets and rerun review. If the author rejects it, apply the
+affirmative integration or deletion and re-review the changed and dependent
+units. Never flip an old `needs_author` result to `pass` in place.
+
+If the Economic Logic, Scope and Qualifiers reviewer finds a standalone
+negative caveat without that flag, it must return `risk_or_role_escalation`
+with category `negative_caveat_candidate` and the exact source span instead of
+an ordinary pass. The controller records the phrase or unit as a QA-contract
+risk marker, regenerates the manifest and packets, and reruns the structured
+admission review. Residual lexical misses therefore fail closed while the
+semantic judgment remains with the reviewer.
 
 The Author-Intent and Coverage role covers all sentence/heading targets. Because
 claim-bearing status, missing definitions, and lost qualifiers are themselves
@@ -693,7 +749,7 @@ Reviewers only return findings. They must not edit the manuscript, alter
 
 The Literature Coverage and Citation Integrity Role is not a fifth semantic
 reviewer and is not the sixth entry in `qa-assignment-registry/1.0`. The four
-machine IDs, their exact criterion IDs, `role_protocol_version: 1.0`, the
+machine IDs, their exact criterion IDs, `role_protocol_version: 1.4`, the
 semantic assignment shape, and the one conservation assignment remain
 unchanged.
 

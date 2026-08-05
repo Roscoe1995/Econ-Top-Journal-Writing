@@ -39,10 +39,18 @@ Keep material in the main text when it:
 ## Caveat Discipline
 
 Do not mistake an accurate evidence boundary for a requirement to restate a
-defensive sentence. Prefer calibrated verbs and claim types. Keep one specific
-caveat at the first point where a reader could otherwise materially misread
-the evidence; merge or delete later repetitions under the same design and
-scope.
+defensive sentence. Prefer calibrated verbs and claim types, then state
+affirmatively what the result, estimate, threshold, scenario, or model object
+represents and what it supports. This is explanatory wording, not favorable
+spin. Apply the admission test even to the first or only negative caveat: bind
+it to the exact claim or number, identify a concrete material misreading not
+already blocked by calibrated wording, and check whether it introduces a new
+object only to deny it. Integrate the boundary into the affirmative explanation
+where possible; keep a separate negative sentence only as the last necessary
+option, and merge or delete later repetitions under the same design and scope.
+If the exact negative proposition is not already frozen by the author, the
+linter may recommend it but must return `clarification_required` rather than
+inserting or accepting it.
 
 Repeat only when identification, sample, period, geography, extrapolation
 target, or evidence grade changes; when the text actually makes a long-run,

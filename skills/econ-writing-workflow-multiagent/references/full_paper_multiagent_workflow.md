@@ -190,6 +190,19 @@ figure; repeat only when the method, sample, period, geography, extrapolation
 target, or evidence level changes, standalone readability requires it, or a
 journal/referee explicitly asks. There is no per-section quota.
 
+Write boundaries affirmatively first: explain what the estimate, threshold,
+scenario, or comparison measures, what it means, and the conditions under
+which that interpretation holds. This is explanatory precision, not optimistic
+spin. A first or unique standalone negative caveat is not automatically
+admissible. Before retaining one, bind it to the exact preceding claim or
+quantity, identify a concrete material misreading that calibrated wording does
+not already prevent, check whether it introduces a new object only to deny it,
+and test whether the same boundary can be integrated into the affirmative
+interpretation. Keep a separate negative sentence only as the last necessary
+option. If that exact negative proposition is not already frozen by the author,
+do not insert or retain it on reviewer judgment alone; return `needs_author`
+for the affected unit.
+
 For a mature `major_revision` or `restructure`, use two separate passes:
 
 1. **Architecture pass:** default to `patch_existing` or
@@ -253,10 +266,28 @@ Dispatch the packets to four isolated native-subagent roles:
 - Economic Logic, Scope and Qualifiers.
 
 The Economic Logic, Scope and Qualifiers reviewer checks both missing genuine
-boundaries and no-information defensive repetition. A calibrated verb may
-preserve a boundary without a standalone disclaimer; deleting repeated caveat
-wording is not a failure when the governing meaning remains intact. Do not add
-a fifth sentence-level caveat reviewer or change the criterion IDs.
+boundaries and defensive caveats that add no explanatory information, including
+the first or only such sentence. For every standalone negative-caveat
+candidate, the reviewer must record the bounded claim or quantity, the concrete
+material misreading, whether affirmative calibrated wording already covers it,
+whether the sentence introduces a new object only in negation, an affirmative
+explanation, and whether a separate negative sentence remains necessary. A
+calibrated verb or affirmative explanation may preserve a boundary without a
+standalone disclaimer; deleting no-information caveat wording is not a failure
+when the governing meaning remains intact. Do not add a fifth sentence-level
+caveat reviewer or change the criterion IDs.
+
+For `recommended_disposition: keep`, the reviewer must check author authority.
+Only an exact unit-to-frozen-proposition binding permits `pass` with no author
+action. Otherwise it returns `needs_author` and
+`requires_author_action: true`; no controller or other reviewer may outvote or
+self-authorize the sentence.
+
+After author approval, add or supersede the frozen author-intent proposition
+with the exact reader-visible negative unit, update the contract revision and
+hash, and reprepare all affected QA artifacts. After rejection, integrate the
+boundary affirmatively or delete the sentence and re-review. Do not edit only
+the old reviewer verdict.
 
 Before dispatch, fill the preparer's `qa-assignment-registry/1.0` template with
 the actual assignment ID, native agent ID, task ID, and timestamp for every

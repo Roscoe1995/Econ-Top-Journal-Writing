@@ -78,7 +78,7 @@ Different identification strategies and paper types require different narrative 
 
 ## Descriptive and Measurement Papers
 - Lead with why the measurement/description matters for economics
-- Be explicit: "This paper does not estimate a causal effect. It documents [pattern/fact/measurement]."
+- State the evidentiary object affirmatively: "The paper documents [pattern/fact/measurement] for [population] during [period] using [data/design]." Add an explicit non-causal contrast only if a concrete causal misreading remains after that wording; bind the contrast to the exact estimate and use a separate negative sentence only as a last resort. Unless that exact contrast is already frozen by the author, return `clarification_required` instead of adding or retaining it
 - Describe the data construction process in detail -- this IS the contribution
 - Show robustness of descriptive patterns to alternative definitions and samples
 - Discuss what causal questions the new facts enable future researchers to answer

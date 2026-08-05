@@ -145,14 +145,30 @@ population, geography, scope, negation, uncertainty, caveats, and the separation
 of association, causality, heterogeneity, and mechanism evidence.
 
 Check both failure directions: a real evidence boundary may not disappear or
-be weakened, and no-information defensive repetition should not be added after
-every table, figure, or result paragraph. Calibrated verbs and claim type may
-fully preserve a boundary without a standalone disclaimer. A limitation is
-repeated only when method, sample, period, geography, extrapolation target, or
-evidence level changes; a standalone abstract/caption/note needs it; or a
-journal/referee explicitly requires it. Do not enforce a per-section count,
-and do not demand a long-run caveat when the manuscript makes no long-run
-claim.
+be weakened, and a first, unique, or repeated no-information defensive sentence
+should not be added after a table, figure, or result paragraph. Calibrated verbs
+and claim type may fully preserve a boundary without a standalone disclaimer.
+
+For every stand-alone negative caveat, identify the exact preceding claim,
+number, estimate, threshold, scenario, or model object it limits; the concrete
+materially stronger reading it blocks; whether calibrated wording already
+blocks that reading; whether the caveat introduces a new outcome or estimand
+only to deny it; and whether the needed meaning can instead be stated as an
+integrated affirmative explanation of what the object is and what it shows.
+`Affirmative` is explanatory, not favorable, and must not strengthen the
+evidence. If no material misreading remains, flag the negative sentence for
+deletion or affirmative rewrite. If a negative contrast remains necessary,
+require it to bind to the exact object and treat a separate sentence as the
+last resort. The reviewer may recommend that last resort but may not authorize
+it. Return `pass + keep` only when the exact unit is bound to a frozen
+author-intent proposition; otherwise return `needs_author` with
+`requires_author_action=true` and let the author decide.
+
+A limitation is repeated only when method, sample, period, geography,
+extrapolation target, or evidence level changes; a standalone
+abstract/caption/note needs it; or a journal/referee explicitly requires it. Do
+not enforce a per-section count, and do not demand a long-run caveat when the
+manuscript makes no long-run claim.
 
 In version 1, all four roles review every sentence/heading target. A specialist
 may return `not_applicable` with evidence, but a lexical pre-classifier cannot
@@ -163,6 +179,20 @@ contribution-boundary, and normative units require at least two independent
 semantic reviews remains a lower bound. Reviewers must be isolated for
 first-pass findings and must not see another reviewer's verdict or a
 controller-authored repair.
+
+If this role discovers a standalone negative caveat that lacks the
+`negative_caveat_candidate` flag, it must not return an ordinary pass. Return
+`risk_or_role_escalation` with that exact category and source span. The
+controller then records the exact phrase or unit as a QA-contract risk marker,
+regenerates the manifest and packets, and obtains the structured admission
+evidence. This semantic escalation closes residual lexical misses without
+letting Python decide whether the caveat is justified.
+
+The structured rationale is review evidence, not authority. Long or polished
+free text cannot convert an unapproved `keep` into a pass. Python checks the
+schema, standard sentinel values, hashes, and exact frozen-author binding; the
+isolated reviewer judges meaning, and the author adjudicates any exceptional
+keep that was not already frozen.
 
 Each role returns structured findings only, including unit and criterion IDs,
 exact source anchor, verdict, evidence, reason, severity, confidence, and

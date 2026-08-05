@@ -54,6 +54,7 @@ import hashlib
 import json
 import re
 import sys
+import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -78,7 +79,7 @@ CONSERVATION_GATE_TYPE = "manuscript_conservation"
 ASSIGNMENT_SCHEMA_ID = "qa-assignment-registry/1.0"
 MAIN_TEXT_SUFFICIENCY_SCHEMA_ID = "main-text-sufficiency-audit/1.0"
 MAIN_TEXT_SUFFICIENCY_GATE_TYPE = "main_text_sufficiency_and_conservation"
-ROLE_PROTOCOL_VERSION = "1.0"
+ROLE_PROTOCOL_VERSION = "1.4"
 MAX_UNITS_PER_PACKET_CEILING = 25
 MAX_PACKET_BYTES_CEILING = 240_000
 MIN_PACKET_BYTES = 10_000
@@ -178,9 +179,47 @@ ROLE_PROTOCOLS: dict[str, dict[str, Any]] = {
         "criterion_definitions": {
             "economic_logic": "Check actor, constraint, behavior, outcome, and equilibrium or institutional links; flag missing steps.",
             "mechanism_authorization": "Check that mechanism statements are authorized and distinct from heterogeneity or suggestive interpretation.",
-            "scope_conditions": "Check whether population, period, geography, domain, uncertainty, caveats, and exceptions are accurate and stated only where they materially change interpretation; flag both missing boundaries and unchanged no-information repetition.",
+            "scope_conditions": "Check whether population, period, geography, domain, uncertainty, caveats, and exceptions are accurate and stated only where they materially change interpretation. For every standalone negative caveat, identify the exact claim or quantity it limits, the concrete material misreading it prevents, whether calibrated affirmative wording already carries the boundary, and whether the caveat introduces a new object only to deny it. Prefer stating what the result is and what it measures; affirmative means explanatory, not favorable, and must never strengthen the evidence. Retain a separate negative sentence only when a material misreading remains.",
             "comparison_direction": "Check comparison group or model benchmark, sign/direction, sequence, and timing.",
             "qualifier_preservation": "Check that negation, uncertainty, scope qualifiers, and association/causality/heterogeneity/mechanism distinctions remain semantically intact after consolidation; calibrated verbs may satisfy the boundary without a standalone disclaimer.",
+        },
+        "conditional_evidence_profiles": {
+            "negative_caveat_candidate": {
+                "criterion_id": "scope_conditions",
+                "evidence_schema_id": "negative-caveat-admission/1.0",
+                "evidence_container": "direct_unit_review_evidence_object",
+                "required_evidence_fields": [
+                    "evidence_schema_id",
+                    "candidate_classification",
+                    "classification_reason",
+                    "bounded_claim_or_quantity",
+                    "concrete_material_misreading",
+                    "already_covered_by_affirmative_wording",
+                    "new_object_only_in_negation",
+                    "affirmative_explanation",
+                    "standalone_negative_necessary",
+                    "necessity_reason",
+                    "recommended_disposition",
+                ],
+                "field_constraints": {
+                    "candidate_classification": [
+                        "standalone_negative_caveat",
+                        "not_a_caveat",
+                    ],
+                    "recommended_disposition": [
+                        "keep",
+                        "integrate_affirmative",
+                        "delete",
+                        "not_a_caveat",
+                    ],
+                    "boolean_fields": [
+                        "already_covered_by_affirmative_wording",
+                        "new_object_only_in_negation",
+                        "standalone_negative_necessary",
+                    ],
+                },
+                "decision_rule": "Treat the lexical flag as a review trigger, not a semantic failure. Prefer an integrated affirmative explanation: explanatory, not favorable, and never stronger than the evidence. A new object introduced only in negation is strong evidence against keep, but not an absolute prohibition. The five narrative fields must perform their distinct roles rather than repeat copied filler. Python checks structure, standard sentinels, and authority binding; it does not prove free-text semantic quality. A keep recommendation may pass only when the exact unit matches a frozen author-intent proposition. Otherwise keep must use verdict needs_author with requires_author_action=true so the workflow stops for author adjudication.",
+            }
         },
     },
 }
@@ -5788,6 +5827,351 @@ def review_records(payload: dict[str, Any]) -> Any:
     return None
 
 
+def unit_risk_categories(unit: dict[str, Any]) -> set[str]:
+    """Return canonical normalized risk categories carried by a manifest unit."""
+
+    risk = unit.get("risk") if isinstance(unit.get("risk"), dict) else {}
+    values: list[Any] = []
+    for raw in (
+        risk.get("categories"),
+        unit.get("risk_categories"),
+        unit.get("risk_flags"),
+    ):
+        values.extend(as_list(raw))
+    return {
+        normalize_role(value)
+        for value in values
+        if isinstance(value, str) and normalize_role(value)
+    }
+
+
+REVIEW_TEXT_PLACEHOLDER_KEYS = {
+    "na",
+    "nil",
+    "ok",
+    "todo",
+    "fixme",
+    "placeholder",
+    "tba",
+    "tbd",
+    "tbc",
+    "tbr",
+    "tbs",
+    "tk",
+    "x",
+    "xx",
+    "xxx",
+    "unknown",
+    "pending",
+    "none",
+    "noneyet",
+    "nothingyet",
+    "null",
+    "notyet",
+    "notavailable",
+    "notapplicable",
+    "tobeadded",
+    "tobeconfirmed",
+    "tobedetermined",
+    "tobefilled",
+    "tobereviewed",
+    "tobesupplied",
+    "unknownvalue",
+    "pendingreview",
+    "待补",
+    "待补充",
+    "待定",
+    "暂无",
+    "暂缺",
+    "待确认",
+    "待审核",
+    "待填写",
+    "待说明",
+    "待核实",
+    "未知",
+    "未定",
+    "不适用",
+}
+
+REVIEW_TEXT_PLACEHOLDER_TOKEN_RE = re.compile(
+    r"^(?:todo|fixme|placeholder|tba|tbc|tbd|tbr|tbs|tk)\b",
+    re.IGNORECASE,
+)
+
+def non_placeholder_review_text(value: Any) -> bool:
+    """Return true for visible text that is not a standard sentinel.
+
+    This is intentionally a structural check.  Free-form prose cannot be
+    proven substantively adequate by a deterministic vocabulary list; the
+    isolated reviewer and, for an unapproved keep, the author decide that.
+    """
+
+    if not isinstance(value, str):
+        return False
+    normalized = unicodedata.normalize("NFKC", value)
+    visible = "".join(
+        character
+        for character in normalized
+        if not unicodedata.category(character).startswith("C")
+    ).strip()
+    if not visible:
+        return False
+    placeholder_key = re.sub(r"[\W_]+", "", visible.casefold(), flags=re.UNICODE)
+    if placeholder_key in REVIEW_TEXT_PLACEHOLDER_KEYS:
+        return False
+    placeholder_phrase = re.sub(
+        r"[\W_]+", " ", visible.casefold(), flags=re.UNICODE
+    ).strip()
+    if REVIEW_TEXT_PLACEHOLDER_TOKEN_RE.search(placeholder_phrase):
+        return False
+    return sum(character.isalnum() for character in visible) >= 2
+
+
+def normalized_exact_author_text(value: Any) -> str:
+    """Normalize only invisible characters and whitespace for exact binding."""
+
+    if not isinstance(value, str):
+        return ""
+    # NFC treats canonically equivalent Unicode spellings alike without the
+    # semantic conflation introduced by compatibility folding.  Case remains
+    # significant because proper names and economic objects may differ only by
+    # capitalization (for example, Turkey versus turkey).
+    normalized = unicodedata.normalize("NFC", value)
+    visible_characters: list[str] = []
+    for character in normalized:
+        if character.isspace():
+            visible_characters.append(" ")
+        elif unicodedata.category(character).startswith("C"):
+            # Do not erase zero-width, bidi, or other format controls and then
+            # accidentally equate two different source strings.  Such a unit
+            # needs fresh author adjudication after cleanup.
+            return ""
+        else:
+            visible_characters.append(character)
+    visible = "".join(visible_characters)
+    return re.sub(r"\s+", " ", visible).strip()
+
+
+def unit_has_frozen_negative_caveat_authorization(unit: dict[str, Any]) -> bool:
+    """Return whether a frozen author proposition exactly authorizes this unit.
+
+    Canonical manifest replay binds these markers to the frozen contract.  The
+    exact-text rule is deliberately narrow: semantic paraphrase authorization
+    requires author adjudication instead of an AI inference.
+    """
+
+    unit_text = normalized_exact_author_text(
+        unit.get("text") or unit.get("normalized_text")
+    )
+    if not unit_text:
+        return False
+    intent_ids = {
+        str(value).strip()
+        for value in as_list(unit.get("intent_ids"))
+        if isinstance(value, str) and value.strip()
+    }
+    risk = unit.get("risk") if isinstance(unit.get("risk"), dict) else {}
+    for marker in as_list(risk.get("matched_contract_markers")):
+        if not isinstance(marker, dict):
+            continue
+        intent_id = marker.get("intent_id")
+        if (
+            normalize_role(marker.get("category")) != "contract_marked"
+            or marker.get("source_authority") != "author_intent_proposition"
+            or not isinstance(intent_id, str)
+            or intent_id.strip() not in intent_ids
+            or normalized_exact_author_text(marker.get("text")) != unit_text
+        ):
+            continue
+        return True
+    return False
+
+
+def validate_negative_caveat_admission_evidence(
+    *,
+    unit: dict[str, Any],
+    criterion_id: str,
+    verdict: str,
+    requires_author_action: bool,
+    evidence: Any,
+    path: Path,
+    audit: GateAudit,
+) -> bool:
+    """Validate the conditional negative-caveat evidence object.
+
+    The preparer supplies a deterministic lexical risk flag.  This validator
+    checks only whether the assigned reviewer returned the complete protocol
+    object and whether its declared decisions are internally consistent.  It
+    deliberately does not decide whether a caveat or alleged misreading is
+    substantively real.
+    """
+
+    if (
+        "negative_caveat_candidate" not in unit_risk_categories(unit)
+        or criterion_id != "scope_conditions"
+    ):
+        return True
+
+    profile = ROLE_PROTOCOLS["economic_logic_scope_qualifiers"][
+        "conditional_evidence_profiles"
+    ]["negative_caveat_candidate"]
+    if not isinstance(evidence, dict):
+        audit.add(
+            "audit_incomplete",
+            "negative_caveat_admission_evidence_missing",
+            "A negative-caveat candidate requires a direct structured scope-conditions evidence object.",
+            path=str(path),
+            unit_id=unit.get("unit_id"),
+        )
+        return False
+
+    valid = True
+    required_fields = profile["required_evidence_fields"]
+    missing_fields = [field for field in required_fields if field not in evidence]
+    if missing_fields:
+        audit.add(
+            "audit_incomplete",
+            "negative_caveat_admission_fields_missing",
+            "The negative-caveat admission evidence object is missing required fields.",
+            path=str(path),
+            unit_id=unit.get("unit_id"),
+            missing_fields=missing_fields,
+        )
+        valid = False
+
+    if evidence.get("evidence_schema_id") != profile["evidence_schema_id"]:
+        audit.add(
+            "audit_incomplete",
+            "negative_caveat_admission_schema_invalid",
+            "Negative-caveat evidence must use the protocol's exact evidence_schema_id.",
+            path=str(path),
+            unit_id=unit.get("unit_id"),
+            evidence_schema_id=evidence.get("evidence_schema_id"),
+        )
+        valid = False
+
+    constraints = profile["field_constraints"]
+    classification = evidence.get("candidate_classification")
+    disposition = evidence.get("recommended_disposition")
+    invalid_fields: list[str] = []
+    if classification not in constraints["candidate_classification"]:
+        invalid_fields.append("candidate_classification")
+    if disposition not in constraints["recommended_disposition"]:
+        invalid_fields.append("recommended_disposition")
+    for field in constraints["boolean_fields"]:
+        if not isinstance(evidence.get(field), bool):
+            invalid_fields.append(field)
+    classification_reason = evidence.get("classification_reason")
+    if not non_placeholder_review_text(classification_reason):
+        invalid_fields.append("classification_reason")
+    caveat_only_text_fields = (
+        "bounded_claim_or_quantity",
+        "concrete_material_misreading",
+        "affirmative_explanation",
+        "necessity_reason",
+    )
+    if classification == "standalone_negative_caveat":
+        for field in caveat_only_text_fields:
+            value = evidence.get(field)
+            if not non_placeholder_review_text(value):
+                invalid_fields.append(field)
+    elif classification == "not_a_caveat":
+        for field in caveat_only_text_fields:
+            if evidence.get(field) is not None:
+                invalid_fields.append(field)
+    if invalid_fields:
+        audit.add(
+            "audit_incomplete",
+            "negative_caveat_admission_fields_invalid",
+            "Negative-caveat admission fields must use the protocol's exact enums, booleans, classification reason, and classification-specific nullable or nonempty text values.",
+            path=str(path),
+            unit_id=unit.get("unit_id"),
+            invalid_fields=sorted(set(invalid_fields)),
+        )
+        valid = False
+
+    if invalid_fields or missing_fields:
+        return valid
+
+    already_covered = evidence["already_covered_by_affirmative_wording"]
+    new_object_only = evidence["new_object_only_in_negation"]
+    necessary = evidence["standalone_negative_necessary"]
+    frozen_author_authorization = unit_has_frozen_negative_caveat_authorization(unit)
+    consistency_errors: list[str] = []
+    if classification == "not_a_caveat":
+        if disposition != "not_a_caveat":
+            consistency_errors.append(
+                "not_a_caveat classification requires not_a_caveat disposition"
+            )
+        if necessary:
+            consistency_errors.append(
+                "not_a_caveat classification requires standalone_negative_necessary=false"
+            )
+        if already_covered:
+            consistency_errors.append(
+                "not_a_caveat classification requires already_covered_by_affirmative_wording=false"
+            )
+        if new_object_only:
+            consistency_errors.append(
+                "not_a_caveat classification requires new_object_only_in_negation=false"
+            )
+    elif classification == "standalone_negative_caveat":
+        if disposition == "not_a_caveat":
+            consistency_errors.append(
+                "standalone_negative_caveat classification cannot use not_a_caveat disposition"
+            )
+        if necessary != (disposition == "keep"):
+            consistency_errors.append(
+                "standalone_negative_necessary must be true if and only if disposition is keep"
+            )
+        if already_covered and (necessary or disposition != "delete"):
+            consistency_errors.append(
+                "already-covered affirmative wording requires unnecessary=false and delete disposition"
+            )
+        if disposition in {"integrate_affirmative", "delete"} and verdict in PASS_VERDICTS:
+            consistency_errors.append(
+                "integrate_affirmative or delete disposition requires a non-pass verdict"
+            )
+        if disposition == "keep":
+            if not necessary or already_covered:
+                consistency_errors.append(
+                    "keep requires necessary=true and already-covered=false; a new object only in negation is permitted solely as an exceptional last resort supported by the required review fields"
+                )
+            if frozen_author_authorization:
+                if verdict != "pass" or requires_author_action:
+                    consistency_errors.append(
+                        "an exact frozen author-intent proposition authorizes keep only with verdict=pass and requires_author_action=false"
+                    )
+            elif verdict != "needs_author" or not requires_author_action:
+                consistency_errors.append(
+                    "keep without an exact frozen author-intent proposition requires verdict=needs_author and requires_author_action=true"
+                )
+        normalized_text_values = {
+            re.sub(
+                r"[\W_]+",
+                "",
+                unicodedata.normalize("NFKC", str(evidence[field])).casefold(),
+                flags=re.UNICODE,
+            )
+            for field in ("classification_reason", *caveat_only_text_fields)
+        }
+        if len(normalized_text_values) < 4:
+            consistency_errors.append(
+                "standalone negative-caveat admission requires at least four distinct normalized narrative text values rather than copied filler"
+            )
+    if consistency_errors:
+        audit.add(
+            "audit_incomplete",
+            "negative_caveat_admission_inconsistent",
+            "The negative-caveat admission evidence and verdict are internally inconsistent.",
+            path=str(path),
+            unit_id=unit.get("unit_id"),
+            consistency_errors=consistency_errors,
+        )
+        valid = False
+    return valid
+
+
 def validate_review_record(
     record: Any,
     path: Path,
@@ -5878,6 +6262,8 @@ def validate_review_record(
     severity = str(record.get("severity", "")).strip().lower()
     if severity not in {"critical", "major", "minor", "none"}:
         valid = False
+    if verdict in PASS_VERDICTS and severity != "none":
+        valid = False
     if not valid:
         audit.add(
             "audit_incomplete",
@@ -5886,6 +6272,16 @@ def validate_review_record(
             path=str(path),
             unit_id=unit_id,
         )
+        return None
+    if not validate_negative_caveat_admission_evidence(
+        unit=unit,
+        criterion_id=criterion.strip(),
+        verdict=verdict,
+        requires_author_action=record.get("requires_author_action"),
+        evidence=record.get("evidence"),
+        path=path,
+        audit=audit,
+    ):
         return None
     if nonempty(record.get("risk_or_role_escalation")):
         audit.add(

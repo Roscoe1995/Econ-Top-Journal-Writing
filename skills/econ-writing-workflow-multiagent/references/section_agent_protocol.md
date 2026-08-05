@@ -138,7 +138,8 @@ Must preserve:
 - key data/design feature;
 - any concrete caveat necessary for standalone interpretation; do not append a
   generic disclaimer when calibrated claim language already preserves the
-  evidence boundary.
+  evidence boundary. State affirmatively what the result measures and means
+  before considering a separate negative sentence.
 
 Must not:
 
@@ -223,12 +224,20 @@ Purpose: explain the main table or figure as the answer to the research question
 Must preserve:
 
 - core coefficient, sign, magnitude, or proposition;
-- economic interpretation;
+- an affirmative explanation of what the coefficient, threshold, scenario, or
+  proposition measures and means;
 - sample comparability;
 - design credibility;
 - link to mechanism or next section.
 
-Must not do column-by-column narration unless needed for identification.
+Must not do column-by-column narration unless needed for identification, or
+append a first or unique negative caveat merely because it is technically true.
+Retain a standalone negative sentence only when it prevents a concrete material
+misreading not already blocked by calibrated wording and cannot be integrated
+into the affirmative interpretation. A section agent still may not add or
+retain that sentence unless its exact proposition is frozen by the author; it
+must otherwise return the proposed contrast for author adjudication rather
+than place it in manuscript prose.
 
 ### Mechanism Agent
 
@@ -315,8 +324,9 @@ After section agents return, the controller must check:
 - no section repeats another section's job;
 - tables and figures are cited only where they serve the argument;
 - concrete evidence boundaries remain semantically preserved, while
-  no-information repeated defensive disclaimers are consolidated under the
-  frozen caveat-placement policy and, once candidate unit IDs exist, the
+  no-information defensive disclaimers, including a first or unique standalone
+  sentence, are either replaced by an affirmative explanation or removed under
+  the frozen caveat-placement policy and, once candidate unit IDs exist, the
   derived registry rather than restored mechanically;
 - when literature audit is triggered, the coverage contract, library,
   registry, ledger, manuscript citekeys, and audit hashes are current and the

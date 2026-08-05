@@ -54,16 +54,24 @@ Before splitting work across agents or roles, create or update a shared paper st
 - coefficient values, magnitudes, mechanisms, robustness results, or caveats;
 - literature claims or citations.
 
-Evidence-boundary accuracy is not a license to repeat defensive disclaimers.
+Evidence-boundary accuracy is not a license to write defensive disclaimers.
 Default to calibrated verbs, the correct claim type, and only the scope
-qualifiers needed for the sentence. State a material limitation once at the
-first place where it changes interpretation; repeat it only when the method,
-sample, period, geography, extrapolation target, or evidence level changes, or
-when a standalone abstract, caption, or note must remain intelligible, or a
-journal/referee explicitly requires it. Do not impose a per-section count.
-Removing a semantically redundant caveat is not loss of evidence discipline,
-but removing a concrete identification assumption or changing the effective
-claim remains a blocking semantic change.
+qualifiers needed for the sentence. Before admitting even the first or only
+stand-alone negative caveat, state affirmatively what the result, estimate,
+threshold, scenario, or model object represents and what interpretation it
+supports. This is explanatory wording, not favorable spin. Retain a separate
+negative sentence only when it blocks a concrete material misreading not
+already excluded by that wording; bind it to the exact claim or number and use
+it as a last resort. An agent may not self-authorize that last resort: unless
+the exact negative proposition is already frozen in the author-intent contract,
+return `needs_author` and stop the affected wording for author adjudication.
+Repeat it only when the method, sample, period, geography,
+extrapolation target, or evidence level changes, or when a standalone abstract,
+caption, or note must remain intelligible, or a journal/referee explicitly
+requires it. Do not impose a per-section count. Removing a first, unique, or
+repeated no-information caveat is not loss of evidence discipline, but removing
+a concrete identification assumption or changing the effective claim remains a
+blocking semantic change.
 
 Missing non-semantic information may remain as a concrete `TODO`. Missing
 meaning or evidence needed to support a claim returns `clarification_required`
@@ -179,9 +187,13 @@ Before finalizing, confirm:
   deterministic citation pass alone was not treated as acceptance, and this
   local pass was not presented as whole-manuscript delivery authorization;
 - prose edits did not delete central contributions, mechanisms, magnitudes,
-  concrete necessary evidence boundaries, or design features; removal or
-  consolidation of no-information repeated disclaimers was not treated as a
-  semantic loss;
+  concrete necessary evidence boundaries, or design features; a first, unique,
+  or repeated no-information defensive sentence was rewritten as affirmative
+  interpretation or removed without being treated as a semantic loss, while
+  every retained negative sentence remained bound to a concrete claim and
+  material misreading and had exact frozen author-intent authority; an
+  otherwise recommended `keep` ended in `needs_author`, not an agent-generated
+  pass;
 - any mature-draft revision followed its recorded rewrite mode and mapped every substantive source block to a conservation-ledger disposition;
 - context or handoff limits were not used as manuscript-length instructions;
 - the QA manifest captures every reader-visible body, appendix, footnote,

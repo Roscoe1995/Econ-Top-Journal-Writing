@@ -74,7 +74,7 @@ ARTIFACT_TASK_MODES = {
     "local_edit",
     "document_translation",
 }
-ROLE_PROTOCOL_VERSION = "1.0"
+ROLE_PROTOCOL_VERSION = "1.4"
 ROLE_PROTOCOLS: dict[str, dict[str, Any]] = {
     "author_intent_coverage": {
         "required_criterion_ids": [
@@ -129,9 +129,47 @@ ROLE_PROTOCOLS: dict[str, dict[str, Any]] = {
         "criterion_definitions": {
             "economic_logic": "Check actor, constraint, behavior, outcome, and equilibrium or institutional links; flag missing steps.",
             "mechanism_authorization": "Check that mechanism statements are authorized and distinct from heterogeneity or suggestive interpretation.",
-            "scope_conditions": "Check whether population, period, geography, domain, uncertainty, caveats, and exceptions are accurate and stated only where they materially change interpretation; flag both missing boundaries and unchanged no-information repetition.",
+            "scope_conditions": "Check whether population, period, geography, domain, uncertainty, caveats, and exceptions are accurate and stated only where they materially change interpretation. For every standalone negative caveat, identify the exact claim or quantity it limits, the concrete material misreading it prevents, whether calibrated affirmative wording already carries the boundary, and whether the caveat introduces a new object only to deny it. Prefer stating what the result is and what it measures; affirmative means explanatory, not favorable, and must never strengthen the evidence. Retain a separate negative sentence only when a material misreading remains.",
             "comparison_direction": "Check comparison group or model benchmark, sign/direction, sequence, and timing.",
             "qualifier_preservation": "Check that negation, uncertainty, scope qualifiers, and association/causality/heterogeneity/mechanism distinctions remain semantically intact after consolidation; calibrated verbs may satisfy the boundary without a standalone disclaimer.",
+        },
+        "conditional_evidence_profiles": {
+            "negative_caveat_candidate": {
+                "criterion_id": "scope_conditions",
+                "evidence_schema_id": "negative-caveat-admission/1.0",
+                "evidence_container": "direct_unit_review_evidence_object",
+                "required_evidence_fields": [
+                    "evidence_schema_id",
+                    "candidate_classification",
+                    "classification_reason",
+                    "bounded_claim_or_quantity",
+                    "concrete_material_misreading",
+                    "already_covered_by_affirmative_wording",
+                    "new_object_only_in_negation",
+                    "affirmative_explanation",
+                    "standalone_negative_necessary",
+                    "necessity_reason",
+                    "recommended_disposition",
+                ],
+                "field_constraints": {
+                    "candidate_classification": [
+                        "standalone_negative_caveat",
+                        "not_a_caveat",
+                    ],
+                    "recommended_disposition": [
+                        "keep",
+                        "integrate_affirmative",
+                        "delete",
+                        "not_a_caveat",
+                    ],
+                    "boolean_fields": [
+                        "already_covered_by_affirmative_wording",
+                        "new_object_only_in_negation",
+                        "standalone_negative_necessary",
+                    ],
+                },
+                "decision_rule": "Treat the lexical flag as a review trigger, not a semantic failure. Prefer an integrated affirmative explanation: explanatory, not favorable, and never stronger than the evidence. A new object introduced only in negation is strong evidence against keep, but not an absolute prohibition. The five narrative fields must perform their distinct roles rather than repeat copied filler. Python checks structure, standard sentinels, and authority binding; it does not prove free-text semantic quality. A keep recommendation may pass only when the exact unit matches a frozen author-intent proposition. Otherwise keep must use verdict needs_author with requires_author_action=true so the workflow stops for author adjudication.",
+            }
         },
     },
 }
@@ -1788,6 +1826,29 @@ QUALIFIER_RE = re.compile(
     r"(?:\u53ef\u80fd|\u6216\u8bb8|\u8868\u660e|\u4ec5|\u53ea\u6709?|\u81f3\u591a|\u6761\u4ef6|\u9664\u975e|\u5e73\u5747|\u4e0d\u4e00\u5b9a|\u4e0d\u80fd)",
     re.IGNORECASE,
 )
+NEGATIVE_CAVEAT_CANDIDATE_RE = re.compile(
+    r"\bno\s+evidence\b"
+    r"(?!\s+(?:(?:is|was|were|has|have|had)\s+)?(?:been\s+)?omitt\w*)"
+    r"(?:(?![.!?]).){0,120}\b(?:forecast\w*|predict\w*|estimat\w*|"
+    r"identif\w*|infer\w*|imply|effect\w*|caus\w*|employment)\b|"
+    r"\b(?:offers?|provides?|has|have)\s+no\s+"
+    r"(?:forecast\w*|prediction|estimate|causal\s+interpretation|"
+    r"employment\s+interpretation|effect\s+estimate)\b|"
+    r"\b(?:not|cannot|can['’]t|won['’]t|doesn['’]t|don['’]t|"
+    r"shouldn['’]t|isn['’]t|aren['’]t|wasn['’]t|weren['’]t|"
+    r"(?:do|does|should|is|are|was|were)\s+not|never|neither)\b"
+    r"(?!\s+only\b)(?:(?![.!?]).){0,120}\b(?:forecast\w*|predict\w*|"
+    r"estimat\w*|identif\w*|infer\w*|imply|extrapolat\w*|generalis\w*|"
+    r"generaliz\w*|caus\w*|long[- ]run|welfare|employment|personnel\s+"
+    r"adjustment|work\s+stoppage|effect\w*|speak\s+to|outside\s+the\s+sample)\b|"
+    r"(?:并不意味着|不适用于样本外|不可外推)|"
+    r"(?:不是|并非|不代表|不等于|不能|无法|不具有|不可据此|不应据此|"
+    r"不宜据此|不应解释为|不应|不宜|不把|不作为|"
+    r"尚未(?:能)?|未(?:能)?|没有|不足以|难以|尚难|不)"
+    r"[^。！？!?\n]{0,80}"
+    r"(?:预测|预报|估计|识别|推断|意味着|解释为|理解为|视为|证明|外推|推广|因果|长期|福利|就业|人员调整|停工|样本外)",
+    re.IGNORECASE,
+)
 DEFINITION_RE = re.compile(
     r"\b(?:define[sd]?|denote[sd]?|refer(?:s|red)? to|is defined as|we call|means?)\b|"
     r"(?:\u5b9a\u4e49|\u8bb0\u4e3a|\u8868\u793a|\u662f\u6307|\u79f0\u4e3a|\u542b\u4e49)",
@@ -1818,13 +1879,25 @@ def contract_markers(
     obligations: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     values: list[Any] = []
-    for container in (author, qa):
+    for source_authority, container in (
+        ("author_contract_marker", author),
+        ("qa_contract_marker", qa),
+    ):
         for key in (
             "high_risk_markers", "risk_markers", "contract_markers",
             "high_risk_phrases", "unit_markers",
         ):
             value = container.get(key, [])
-            values.extend(value if isinstance(value, list) else [value])
+            raw_values = value if isinstance(value, list) else [value]
+            for raw_value in raw_values:
+                if isinstance(raw_value, dict):
+                    tagged_value = dict(raw_value)
+                    # Caller-supplied risk metadata cannot impersonate a
+                    # proposition from the frozen author-intent authority.
+                    tagged_value["source_authority"] = source_authority
+                    values.append(tagged_value)
+                else:
+                    values.append(raw_value)
     for proposition in author.get("propositions", []) if isinstance(author.get("propositions"), list) else []:
         if isinstance(proposition, dict):
             values.append(
@@ -1832,6 +1905,7 @@ def contract_markers(
                     "text": proposition.get("must_express", ""),
                     "category": "contract_marked",
                     "intent_id": proposition.get("intent_id"),
+                    "source_authority": "author_intent_proposition",
                 }
             )
     for obligation in obligations:
@@ -1873,6 +1947,7 @@ def contract_markers(
                         "category": str(value.get("category") or "contract_marked"),
                         "intent_id": value.get("intent_id"),
                         "definition_id": value.get("definition_id"),
+                        "source_authority": value.get("source_authority"),
                     }
                 )
     for definition in definitions:
@@ -1908,6 +1983,7 @@ def risk_for_text(text: str, markers: list[dict[str, Any]]) -> dict[str, Any]:
         ("mechanism", MECHANISM_RE),
         ("numeric", NUMERIC_RE),
         ("qualifier", QUALIFIER_RE),
+        ("negative_caveat_candidate", NEGATIVE_CAVEAT_CANDIDATE_RE),
         ("definition", DEFINITION_RE),
     )
     for category, pattern in checks:
@@ -2433,7 +2509,7 @@ def roles_for_risk(risk: dict[str, Any], available: list[str], qa: dict[str, Any
     category_roles = {
         "evidence_claim_strength": {"evidence", "factual", "numeric", "causal", "mechanism", "empirical", "contract_marked"},
         "definitions_reader_sufficiency": {"definition", "acronym", "first_use"},
-        "economic_logic_scope_qualifiers": {"causal", "mechanism", "scope", "qualifier", "negation", "normative", "logic"},
+        "economic_logic_scope_qualifiers": {"causal", "mechanism", "scope", "qualifier", "negation", "negative_caveat_candidate", "normative", "logic"},
     }
     for role, triggers in category_roles.items():
         if role in available and categories & triggers:

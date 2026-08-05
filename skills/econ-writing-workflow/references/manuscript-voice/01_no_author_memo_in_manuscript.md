@@ -61,13 +61,13 @@ Do not mix main-text pointers with table-layout or file-construction explanation
 
 Acceptable main-text pointer:
 
-- `AI适配度前10和后10城市及其人均GDP见在线附录C3。`
-- `Appendix Table C3 reports the ten cities with the highest and lowest AI-fit scores and their GDP per capita.`
+- `拥堵指数最高和最低的十条运输线路见在线附录C3。`
+- `Appendix Table C3 reports the ten routes with the highest and lowest congestion scores.`
 
 Not acceptable as main-text prose:
 
-- `在线附录C3左边列示前十城市，右边列示后十城市，中间分开排版。`
-- `Appendix Table C3 uses a split-column layout with the top ten on the left and the bottom ten on the right.`
+- `在线附录C3左边列示拥堵指数最高的十条线路，右边列示最低的十条线路，中间分开排版。`
+- `Appendix Table C3 uses a split-column layout with the highest-congestion routes on the left and the lowest-congestion routes on the right.`
 
 If the reader truly needs layout guidance to read a dense appendix table, put it in the appendix table note or the short appendix text immediately before the table.
 
@@ -90,8 +90,10 @@ These phrases are not automatically forbidden. Use them only when they introduce
 - `需要说明的是`: acceptable for a real definition, sample boundary, identifying assumption, or interpretation limit. Avoid it when it introduces drafting strategy.
 - `本文不再赘述` / `不再展开`: acceptable only for genuinely standard derivations or previously established definitions, and usually better as a concise cross-reference.
 - `完整结果见附录`: acceptable when it names the concrete appendix/table/figure and the appendix contains reader-relevant robustness or derivation. Avoid vague appendix dumping.
-- `不是……而是……`: acceptable for conceptual distinction, model scope, or interpretation boundary. Avoid using it to defend a writing choice.
-- `本文不把……解释为因果效应`: acceptable when it clarifies a material identification scope at the first genuinely necessary location. Keep the object specific and do not repeat the sentence after every result under the same design.
+- `不是……而是……`: acceptable for a necessary conceptual distinction, model scope, or interpretation boundary after affirmative wording has stated what the object is. Avoid using it to defend a writing choice or to introduce a new object only so the sentence can deny it.
+- `本文不把……解释为因果效应`: acceptable only when a concrete causal misreading remains after accurate verbs, claim type, and affirmative scope wording. Bind it to the exact result and use a stand-alone negative sentence only as a last resort.
+
+“可接受”只描述语义候选，不授予写入权限。若上述精确否定命题未由作者确认并冻结，返回 `clarification_required`，提交正面解释与拟保留对照供作者裁决，不得由 AI 自行写入或保留。
 
 ## Caveat Placement Discipline
 
@@ -99,6 +101,22 @@ Reader-facing evidence boundaries are not author memos, but repetitive
 defensive prose still weakens the manuscript. Prefer an accurate verb, claim
 type, and local scope condition. Add a separate limitation only when the
 reader could otherwise materially misread the evidence.
+
+This test applies to the first or only caveat as well as later repetitions.
+First state affirmatively what the result, estimate, threshold, scenario, or
+model object represents and what it helps the reader interpret. This is not
+positive spin: the wording must preserve the same evidence strength. A
+stand-alone negative caveat is admitted only if it identifies the exact claim
+it limits and blocks a concrete stronger reading that the affirmative wording
+does not already exclude. If it introduces a new outcome or estimand only to
+deny that the paper estimates it, delete it unless that confusion is materially
+plausible; when it is plausible, integrate the distinction into the result
+interpretation and leave a separate negative sentence as the last resort.
+
+That last resort still requires author authority. If its exact negative
+proposition is not already frozen, withhold it and return
+`clarification_required`; a reviewer finding or polished rationale cannot
+authorize manuscript insertion.
 
 State the same limitation once when it first matters. Repeat it only when the
 identification, sample, period, geography, extrapolation target, or evidence
@@ -118,9 +136,9 @@ specific condition rather than copying a generic disclaimer.
 
 Turn author-facing draft talk into reader-facing economics prose:
 
-- Instead of saying the paper uses a certain "writing style," state the research design's scope: `本文提供任务结构与AI技术方向匹配的测度和反事实核算，不估计AI对城市GDP、工资或就业的总效应。`
+- Instead of saying the paper uses a certain "writing style," state affirmatively what the design measures: `本文的模型比较刻画给定固定成本下的均衡进入率及其对需求弹性的敏感性。`
 - Instead of saying content was moved for length, state the appendix object: `附录C报告替换指标、调整样本门槛和改变权重口径后的完整稳健性结果。`
-- Instead of saying a section satisfies a call for papers, state the substantive fit: `本文把AI能力的任务方向与城市新增劳动需求结构连接起来，刻画通用技术在空间上的潜在收益差异。`
+- Instead of saying a section satisfies a call for papers, state the substantive fit: `本文把运输网络的拥堵暴露与企业路线选择连接起来，刻画固定容量下的均衡等待时间差异。`
 - Instead of saying the author will later supplement a point, put a genuinely non-semantic missing fact in an author-facing `TODO`. Do not omit a frozen `must_express` proposition; if the missing item changes its meaning or support, return `clarification_required` or `evidence_conflict` and leave the affected manuscript text unwritten.
 
 ## Final Delivery Check
@@ -134,11 +152,17 @@ Before finalizing manuscript text, scan for:
 
 For each hit, decide:
 
-- **Keep** if it is a reader-facing definition, scope condition, cross-reference, or identification caveat.
+- **Keep** if it is a reader-facing definition, scope condition, cross-reference, or identification caveat and, for a stand-alone negative caveat, its exact proposition is already frozen by the author.
 - **Rewrite** if the economics point is valid but phrased as a drafting choice.
 - **Move** if it belongs in an author memo or task log.
 
-For repeated caveat hits, also compare identification, sample, period,
-geography, extrapolation target, and evidence grade with the first adequate
-statement. Keep a repeat only when at least one material condition changed or
-the object must stand alone.
+For every stand-alone negative caveat, including its first occurrence, record
+the exact claim it limits, the concrete stronger misreading it blocks, whether
+calibrated wording already blocks that reading, whether the sentence introduces
+a new object only to deny it, and whether affirmative interpretation can carry
+the needed meaning. For repeated hits, also compare identification, sample,
+period, geography, extrapolation target, and evidence grade with the first
+adequate statement. Keep a negative sentence only when it adds material
+interpretive information or the object must stand alone, and only with the
+exact frozen author-intent authority required above. Otherwise return
+`clarification_required`.
