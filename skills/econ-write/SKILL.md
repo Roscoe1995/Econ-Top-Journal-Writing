@@ -31,7 +31,7 @@ For English prose polishing, diction cleanup, abstract/introduction/result rewri
 - `06_english_revision_linter.md`: run a final linter for AI style, overclaiming, passive filler, and template signposting.
 - `07_source_coverage.md`: check source coverage and extraction limits before treating a pattern as general.
 
-For table and figure tasks, use the separate `econ-table-figure-design` skill before applying prose rules. This includes table placement, three-line tables, main regression/robustness/heterogeneity/mechanism displays, table notes, figure admission, event-study/trend/map/distribution figures, palettes, typography, and export checks. After the artifact design is settled, return to `econ-write` for English results narration and surrounding prose.
+For table and figure tasks, use the separate `econ-table-figure-design` skill before applying prose rules. This includes table placement, three-line tables, main regression/robustness/heterogeneity/mechanism displays, table notes, figure admission, event-study/trend/map/distribution figures, palettes, typography, and export checks. Load its mandatory reader-facing-label reference for titles, panels, row and column names, axes, legends, and notes; English display text must be concise, idiomatic economics prose rather than code tokens, literal translation, or unexplained internal shorthand. After the artifact design is settled, return to `econ-write` for English results narration and surrounding prose.
 
 For any manuscript-facing prose, do not include author workflow notes, draft-management explanations, submission-strategy discussion, or internal author-agent memo language. If a sentence explains why the author/agent moved, deleted, shortened, or framed something, keep it in an author memo rather than the paper.
 
@@ -374,7 +374,7 @@ AI-assisted writing often has telltale patterns. Eliminate these:
 # TABLES AND FIGURES
 
 ## Regression Tables
-- Every table must have a self-contained caption explaining the regression, variables, and what is shown
+- Give every table a concise identifying title or caption. The title plus row and column labels must establish the object, statistic, and material comparison; put exact variable definitions and specification details in the notes or nearby text under the central reader-facing-label gate
 - No number should appear in a table that is not discussed in the text
 - Use plain English variable names ("Years of education", "Female"), NOT code names
 - Use consistent decimal places (2-3) throughout all tables

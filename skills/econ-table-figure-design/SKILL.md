@@ -23,14 +23,17 @@ If this skill is directly triggered inside a multi-step paper writing, journal-a
 
 1. Classify the artifact: main regression table, robustness table, heterogeneity table, mechanism table, descriptive table, introduction figure, event-study figure, trend/binscatter, map/distribution figure, or mechanism figure.
 2. Decide placement: main text only if the artifact advances the paper's main question, design, result, or mechanism; otherwise move it to appendix or audit notes.
-3. Apply the relevant reference file below.
-4. Check language mode: English uses `Table/Figure` and `Notes:`; Chinese uses `表/图` and `注：`.
-5. Verify final artifact, not just the code: table lines, widths, panel labels, notes, fonts, colors, legends, colorbars, insets, axes, and export resolution must be visually correct.
+3. Load `references/labels/01_reader_facing_labels.md` for every paper-facing table or figure, then apply the artifact-specific reference below.
+4. Check language mode: maintain separate English and Chinese display-label and note versions; English uses `Table/Figure` and `Notes:`, while Chinese uses `表/图` and `注：`.
+5. Run the two-level label audit: a cold reader must identify the object, statistic, and material comparison from the title and labels alone; notes and nearby manuscript text must then recover the complete definition.
+6. For code-generated paper-facing artifacts and delivery candidates, run `scripts/audit_reader_facing_labels.py` against the current artifact, manifest, and semantic/render review before acceptance.
+7. Verify final artifact, not just the code: table lines, widths, panel labels, notes, fonts, colors, legends, colorbars, insets, axes, and export resolution must be visually correct.
 
 ## References
 
 Load only the relevant files:
 
+- `references/labels/01_reader_facing_labels.md`: mandatory reader-facing label, bilingual note, semantic mapping, and two-level acceptance rules.
 - `references/tables/01_three_line_tables.md`: three-line table and booktabs rules.
 - `references/tables/02_main_regression_tables.md`: main regression table placement and structure.
 - `references/tables/03_robustness_tables.md`: robustness table design.
@@ -52,6 +55,9 @@ Load only the relevant files:
 ## Non-Negotiables
 
 - Do not change coefficients, standard errors, stars, variable meanings, or sample definitions when only formatting a table.
+- Do not deliver a paper-facing title, panel, row or column name, axis, legend, colorbar, or annotation that exposes an internal code identifier or leaves the economic object, statistic, or material comparison unintelligible. Change display mappings only; never rename source variables or alter estimates.
+- Do not guess a fluent public label when the underlying meaning, unit, baseline, denominator, group definition, or comparison direction is unresolved. Return `clarification_required` for the affected scope.
+- Do not use surrounding prose to rescue a title-and-label layer that fails basic identity. Keep labels concise, then place complete construction details in the nearest note or manuscript definition.
 - Do not put author workflow notes in paper-facing table notes or figure notes.
 - Do not put table or appendix layout-construction language into main-text pointers. Main text may point readers to a table or appendix, but descriptions of split columns, left/right halves, page breaks, continued tables, repeated headers, column widths, or formatting choices belong in appendix text, table titles, table notes, or production notes.
 - Do not use decorative color. Color must encode treatment, group, period, geography, or uncertainty.

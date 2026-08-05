@@ -120,7 +120,7 @@ Then route substantive work to child skills:
 - Chinese top-journal writing: `cn-top-econ-writing`.
 - Chinese diction cleanup: `cn-top-econ-writing` with `cn-top-econ-writing/references/chinese-diction/`.
 - Chinese argument logic: `cn-top-econ-writing` with `cn-top-econ-writing/references/argument-logic/`.
-- Tables, figures, notes, captions, palettes, and main-text versus appendix placement: `econ-table-figure-design`.
+- Tables, figures, notes, captions, titles, row and column names, axes, legends, palettes, and main-text versus appendix placement: `econ-table-figure-design`. Apply its mandatory reader-facing-label reference and two-level cold-reader/full-recoverability review; do not create a parallel multiagent label schema.
 - Data cleaning, variable construction, regression estimation, and reproducibility: `empirical-econ-workflow`.
 
 ## Default Workflow
@@ -181,6 +181,7 @@ Before finalizing, confirm:
   evidence, definition, or scope conflicts retain a blocking status, while only
   missing non-semantic facts may remain as user-facing `TODO`;
 - table/figure decisions were integrated into the argument spine;
+- every code-generated paper-facing or final table/figure has a current hash-bound label audit, and the Table/Figure Role completed the basic-identity, full-recoverability, language, and rendered-artifact passes required by `econ-table-figure-design`;
 - every triggered literature role has a current
   gate-local `literature-audit-validation/1.0` pass from
   `scripts/validate_literature_audit.py`; a plausible role memo or a
