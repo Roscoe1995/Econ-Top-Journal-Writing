@@ -156,7 +156,7 @@ description: Use when drafting, auditing, restructuring, polishing, or adapting 
 
 当用户指定目标中文期刊，或要求按某一期刊投稿要求调整、投稿前格式检查、匿名稿检查、录用后排版、正文/附录取舍或参考文献体例适配时，先读取 `references/journal-styles/00_journal_submission_workflow.md`。
 
-目标期刊为《经济学（季刊）》或 China Economic Quarterly 时，继续读取 `references/journal-styles/economics_quarterly.md`；涉及跨页表、图形清晰度、中文图中文字、正文图准入、附录引用和变量命名时，同时读取 `references/journal-styles/common_chinese_journal_rules.md`。
+目标期刊为《经济学（季刊）》或 China Economic Quarterly 时，继续读取 `references/journal-styles/economics_quarterly.md`；涉及中文顶刊通用匿名审稿 Word 底盘、跨页表、图形清晰度、中文图中文字、正文图准入、附录引用和变量命名时，同时读取 `references/journal-styles/common_chinese_journal_rules.md`。
 
 期刊体例规则的优先级固定为：官网硬性投稿要求 > 用户明确确认过的投稿实操流程 > 目标期刊已发表论文中的稳定体例 > 中文期刊共同规则 > 本 skill 的一般中文顶刊写作规则。不要用单篇样例风格覆盖官网硬性要求。
 
@@ -849,9 +849,9 @@ description: Use when drafting, auditing, restructuring, polishing, or adapting 
   - 英文/数字字体
   - 图题和图注放图内还是图外
   就应把这些要求落实到实际绘图脚本和最终成品，而不是只停留在口头说明。
-- 默认规则：
-  - 中文文字用与正文相容的中文字体体系；
-  - 英文和数字优先用 `Times New Roman`；
+- 图形字体采用以下硬规则；只有用户明确指定其他字体，或目标期刊官网明确规定其他字体时，才按更高优先级要求覆盖：
+  - 图题、坐标轴标题、图例、图注和图内标注中的中文统一使用宋体；
+  - 英文、拉丁字母、阿拉伯数字和坐标轴刻度数字统一使用 `Times New Roman`；
   - 总标题和长图注优先放图外，由正文样式链统一管理；
   - 重绘后必须核最终图文件，而不是只看脚本是否成功运行。
 

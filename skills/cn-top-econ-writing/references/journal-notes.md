@@ -3,7 +3,7 @@
 本文件只保留轻量索引。若用户要求按具体期刊投稿体例、匿名稿、录用后格式、参考文献或正文/附录规则调整，先读取 `journal-styles/00_journal_submission_workflow.md`。
 
 - 《经济学（季刊）》：读取 `journal-styles/economics_quarterly.md`。
-- 中文期刊共同图表、续表、附录和变量命名规则：读取 `journal-styles/common_chinese_journal_rules.md`。
+- 中文顶刊通用匿名审稿 Word 底盘，以及共同图表、续表、附录和变量命名规则：读取 `journal-styles/common_chinese_journal_rules.md`。
 - 《经济研究》《管理世界》《中国工业经济》：目前仍使用下方备忘；后续如有独立体例文件，应以独立文件为准。
 
 ## 《经济研究》
