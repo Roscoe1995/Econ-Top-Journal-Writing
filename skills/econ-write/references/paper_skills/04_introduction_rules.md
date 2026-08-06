@@ -1,7 +1,7 @@
 ---
 purpose: "Provide executable rules for writing and revising economics paper introductions."
 applies_to: "Introduction structure, motivation, contribution framing, and results preview."
-last_updated: "2026-05-13"
+last_updated: "2026-08-03"
 used_by: "paper_skills"
 ---
 
@@ -27,9 +27,12 @@ Then mark the introduction's protected content:
 - must-preserve mechanism;
 - must-preserve empirical magnitude;
 - must-preserve data/design feature;
-- must-preserve caveat or scope condition.
+- semantic content of any necessary caveat or scope condition.
 
-If these are not explicit, infer them from the current text and preserve them unless the user asks to reframe the paper.
+If these are not explicit, first apply the current author-intent gate. Reuse an
+existing frozen contract when it uniquely covers the introduction; otherwise
+ask for confirmation rather than silently inferring and freezing one of
+several materially different meanings from the draft.
 
 ## 2. Speed Without Strategic Loss
 
@@ -54,7 +57,9 @@ Use this order unless the paper type calls for a different emphasis:
 4. Main result: concrete magnitude, proposition, or counterfactual.
 5. Mechanism: why the result arises or what economic force explains it.
 6. Contribution: what prior work did not settle and what this paper adds.
-7. Scope: the key population, setting, model boundary, or identification caveat.
+7. Scope: the key population, setting, model boundary, or identification
+   caveat when the reader genuinely needs it; do not turn this into a mandatory
+   disclaimer paragraph.
 8. Roadmap: brief and customized.
 
 ## 4. Paper-Type Branches
@@ -86,11 +91,16 @@ When cutting:
 - delete generic motivation before deleting the mechanism;
 - merge literature sentences before deleting the second contribution;
 - shorten data description before deleting the identifying design feature;
-- compress caveats into one clause rather than erasing necessary scope limits.
+- preserve necessary scope meaning while merging repeated caveat wording; a
+  calibrated verb or one precise clause may be enough.
 
 ## 6. Drop Check After Rewriting
 
-After rewriting, compare the new introduction with the old one. List any substantive claim, mechanism, data source, magnitude, caveat, or contribution that was dropped.
+After rewriting, compare the new introduction with the old one. List any
+substantive claim, mechanism, data source, magnitude, caveat meaning, or
+contribution that was dropped. Do not count deletion of a later, unchanged
+disclaimer as a semantic drop when the boundary remains clear at its first
+adequate location.
 
 If a dropped item is central or strategically important, restore it in compressed form. Do this check even if the final answer only briefly says that no central contribution was dropped.
 

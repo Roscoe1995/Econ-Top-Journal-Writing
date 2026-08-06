@@ -5,7 +5,7 @@
 - Purpose
 - Author-intent gate
 - Baseline artifact and input audit
-- State, evidence, architecture, and drafting
+- State, evidence, literature coverage, architecture, and drafting
 - Exhaustive semantic QA and bounded repair
 - Diction, conservation, and final consistency
 - Final deliverable
@@ -95,6 +95,9 @@ authoritative author-intent revision and hash. Build:
 - content obligations linked to intent IDs;
 - a definition registry with first-use requirements and any author-authorized
   presupposed knowledge;
+- an optional frozen caveat-placement policy plus a `pending_candidate`
+  paper-state pointer; create the derived registry only after candidate unit
+  IDs exist, then record first satisfaction and the exact repetition triggers;
 - a frozen/accepted `evidence-registry/1.0` with a live path and SHA-256 when
   evidence is not already anchored inside the author contract;
 - a QA contract with manuscript and contract hashes, mode, scope, required
@@ -110,6 +113,33 @@ Declare `qa_mode` explicitly. Map `full_draft`, `proposal_draft`,
 `bounded_change` for `local_edit` and `local_polish`. A bounded scope also
 records identical nonempty `affected_intent_ids` lists in its classification
 and revision scope.
+
+When the literature trigger applies, also point to the live
+`literature-coverage-contract/1.0`, `reference-library-manifest/1.0`, and
+`literature-registry/1.0` objects and record their hashes. Keep bibliographic
+  metadata, admission decisions, claim/unit evidence links, and the final visible
+  bibliography as four distinct layers. Before drafting, initialize the existing
+  text-to-evidence ledger authority as `pending_candidate`; do not invent unit
+  IDs. After a provisional QA manifest produces reader-visible unit IDs, add its
+  current citekey/unit mappings and hash the completed ledger before citation
+  audit. Do not create a second claim-source authority.
+
+### Step 3A. Literature Coverage Contract And Authority Audit
+
+Load the stable workflow's
+`econ-writing-workflow/references/literature-grounding/02_literature_coverage_and_citation_integrity.md`
+for a full paper/proposal, major revision/restructure, substantive literature
+change, or final audit with references. Record search scope, languages,
+coverage date, inclusion criteria, applicable functional clusters, gaps, and a
+substantive stop condition. A project-specific minimum or target range is valid
+only with a recoverable author requirement, journal rule, or reproducible
+comparable-paper sample; there is no skill-wide reference-count floor.
+
+A focused contribution passage may foreground roughly five to ten close and
+recent papers, but that presentation choice is not a cap on the paper's full
+reference set. Missing recent, theory/mechanism, data/measurement/institution,
+method/identification/model, or contrary/alternative clusters cannot be offset
+by adding more papers to a different cluster.
 
 ### Step 4. Table/Figure Plan
 
@@ -152,6 +182,14 @@ Route English prose to `econ-write` and Chinese prose to
 logic, table/figure, or definition decision, stop that scope and use the
 controller-mediated collaboration protocol.
 
+Across sections, preserve evidence strength primarily through calibrated verbs,
+claim type, and necessary scope qualifiers. Concentrate a material caveat at
+the first place where it changes interpretation. Do not append the same
+non-causal, non-extrapolation, or no-long-run disclaimer after every table or
+figure; repeat only when the method, sample, period, geography, extrapolation
+target, or evidence level changes, standalone readability requires it, or a
+journal/referee explicitly asks. There is no per-section quota.
+
 For a mature `major_revision` or `restructure`, use two separate passes:
 
 1. **Architecture pass:** default to `patch_existing` or
@@ -186,10 +224,24 @@ context in reviewer packets. Keep labels, citations, and references as exact
 anchors. Treat substantive headings as intent-mapped units, not decorative
 containers.
 
+When a caveat-placement policy is active, use a deterministic two-pass
+preparation sequence: generate a provisional manifest to obtain candidate unit
+IDs; materialize or rebind the derived caveat registry to those IDs and the
+candidate hash; then regenerate the final manifest and packets against that
+current registry. A pending or stale registry cannot be smuggled into final
+packets.
+
 Version 1 accepts `.tex`, `.md`, and `.txt`. Export `.docx` first and record the
 export limitation and hash. Python performs deterministic extraction,
 identification, hashing, packet construction, and validation only; it does not
 call models or make semantic judgments.
+
+When the literature trigger applies, also run
+`scripts/audit_citation_integrity.py` in draft mode against the manuscript,
+coverage contract, library manifest, literature registry, and text-to-evidence
+ledger. Deterministic citation audit checks sets, metadata, hashes, and closure;
+it does not decide whether a source is important or semantically supports a
+claim.
 
 ### Step 9. Independent Semantic Review, Conflict Resolution, And Repair
 
@@ -199,6 +251,12 @@ Dispatch the packets to four isolated native-subagent roles:
 - Evidence and Claim Strength;
 - Definitions and Reader Sufficiency;
 - Economic Logic, Scope and Qualifiers.
+
+The Economic Logic, Scope and Qualifiers reviewer checks both missing genuine
+boundaries and no-information defensive repetition. A calibrated verb may
+preserve a boundary without a standalone disclaimer; deleting repeated caveat
+wording is not a failure when the governing meaning remains intact. Do not add
+a fifth sentence-level caveat reviewer or change the criterion IDs.
 
 Before dispatch, fill the preparer's `qa-assignment-registry/1.0` template with
 the actual assignment ID, native agent ID, task ID, and timestamp for every
@@ -236,6 +294,47 @@ intent change control. Regenerate hashes and re-review changed units, their
 paragraphs, all definition/evidence/qualifier dependencies, and corresponding
 abstract, introduction, conclusion, caption, note, and appendix statements.
 
+### Step 9A. Independent Literature Coverage And Citation Integrity Audit
+
+For every triggered task, send the current manuscript, literature authorities,
+text-to-evidence ledger, and draft citation report to the independent
+Literature Coverage and Citation Integrity Role. Require a hash-bound
+`literature-coverage-audit/1.0` result. This role is outside the four semantic
+roles and the Main-Text Sufficiency and Conservation Role and must not appear in
+`qa-assignment-registry/1.0`.
+
+Pre-register it instead in a separate
+`literature-audit-assignment/1.0` record with a unique assignment ID, native
+agent ID, task ID, timezone-aware dispatch time, independence declaration, and
+all input hashes. Bind the explicit live QA manifest and complete core QA
+assignment registry
+and forbid reuse of every drafting/integration agent, four semantic reviewers,
+and the fifth conservation reviewer. Bind the returned audit to the literature
+assignment ID and file hash.
+This preserves auditable delegation without changing the stable semantic or
+conservation assignment schema.
+Populate drafting/integration identities from the native task or current
+handoff record. The validator can prove internal consistency of the file chain
+and derive the core five reviewer identities, but editable files cannot prove
+that the declared runtime actor universe is complete; its assurance therefore
+remains `attested: true, proven: false` even on a structurally valid pass.
+
+Missing or stale output is `audit_incomplete`; an unresolved applicable
+coverage cluster is `fail`; a claim unsupported by inspected admitted sources
+is `evidence_conflict`; unauthorized `nocite` is `approval_required`; and an
+unmeasurable format is `metric_unavailable`. The role returns findings only and
+does not edit manuscript prose, the registry, ledger, or library.
+
+Run `scripts/validate_literature_audit.py` after the role returns. Supply the
+live manuscript, coverage contract, reference-library manifest, literature
+registry, text-to-evidence ledger, deterministic citation report, separate
+literature assignment, literature audit, current core QA assignment registry
+and explicit live QA manifest, plus visible bibliography in final mode. Only
+the validator's current `literature-audit-validation/1.0`
+`gate_local_status: pass` closes this literature step; the role's own status is
+not sufficient, and the local pass does not authorize whole-manuscript
+delivery.
+
 ### Step 10. Diction And Post-Diction Semantic Re-Review
 
 Run language-specific diction only after substantive semantic findings are
@@ -246,10 +345,30 @@ closed:
 
 Treat diction as a new change set. Regenerate affected units and hashes and send
 changed and dependent units to independent semantic re-review. Smooth prose is
-not accepted if it loses a qualifier, changes a definition, narrows content, or
-strengthens a claim.
+not accepted if it loses a concrete qualifier, changes a definition, narrows
+content, or strengthens a claim. It may consolidate a semantically redundant
+disclaimer; do not mechanically restore that repetition when the frozen
+boundary remains satisfied. Any manuscript byte change invalidates the prior
+deterministic citation report and literature-role result because both bind the
+candidate hash, even when citekeys are unchanged; regenerate them before final
+acceptance.
 
 ### Step 11. Final Conservation, Main-Text Sufficiency, And Consistency
+
+Before conservation finalization, run `scripts/audit_citation_integrity.py` in
+final mode when references are present. First create a current
+`bibliography-build-attestation/1.0` that binds the expanded manuscript,
+reference-library manifest, every manifested `.bib` file, QA manifest, visible
+bibliography, timezone-aware build time, and build tool. Pass that file through
+`--bibliography-build-attestation`; final mode fails closed without it. Verify
+that manuscript citekeys plus
+authorized `nocite` entries exactly generate the visible bibliography. Unused
+inventory in a manifested `.bib` is allowed when it is absent from the visible
+bibliography. Reject missing citekeys, duplicate citekeys/DOIs, stale `.bbl` or
+manual reference lists, unauthorized `nocite`, and any hash mismatch. If
+the manuscript, any literature authority, ledger, citation report, or visible
+bibliography changed since Step 9A, rerun the independent literature role
+against the final hashes and rerun `scripts/validate_literature_audit.py`.
 
 Run the deterministic conservation script against the final post-diction
 candidate, then route the baseline, candidate, artifact contract, four-way
@@ -278,7 +397,8 @@ all of its findings. Reserve `audit_incomplete` for a missing, malformed,
 stale, unassigned, or otherwise unverifiable fifth-role record.
 
 Final consistency checks paper state versus draft, cross-section meaning,
-definitions, variables, table/figure references, magnitudes, caveats,
+definitions, variables, table/figure references, magnitudes, concrete
+evidence-boundary semantics and non-redundant caveat placement,
 contribution preservation, manuscript voice, and unresolved items. Delivery is
 blocked by `clarification_required`, `evidence_conflict`, `approval_required`,
 `fail`, `metric_unavailable`, or `audit_incomplete` from any applicable gate.
@@ -295,6 +415,7 @@ Table/figure placement:
 Drafted or patched sections:
 Preserved claims:
 Semantic-QA status and reviewed manuscript hash:
+Literature-coverage and citation-integrity status and hashes:
 Four-way ledger status:
 Artifact-contract and main-text-sufficiency status:
 Remaining TODOs or blocking findings:

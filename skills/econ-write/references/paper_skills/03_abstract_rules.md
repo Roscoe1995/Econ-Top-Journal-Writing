@@ -1,7 +1,7 @@
 ---
 purpose: "Provide executable rules for writing and revising economics paper abstracts."
 applies_to: "Abstract drafting, abstract revision, and abstract linting."
-last_updated: "2026-05-13"
+last_updated: "2026-08-03"
 used_by: "paper_skills"
 ---
 
@@ -27,9 +27,12 @@ Then identify:
 - must-preserve mechanism;
 - must-preserve empirical magnitude;
 - must-preserve data/design feature;
-- must-preserve caveat or scope condition.
+- semantic content of any necessary caveat or scope condition.
 
-If the user does not provide this information explicitly, infer it from the existing abstract, introduction, tables, figures, and project notes. Protect these items before cutting words.
+If the user does not provide this information explicitly, first apply the
+current author-intent gate. Reuse an existing frozen contract when it uniquely
+covers the abstract; if several materially different meanings remain possible,
+ask for confirmation rather than silently inferring one from the draft.
 
 ## 2. Length Rule
 
@@ -37,7 +40,10 @@ Default target: 100-150 words.
 
 This is a default, not a hard cap, unless the journal explicitly imposes it. For papers with more than one central contribution, mixed theory-empirical papers, structural papers, or papers where the mechanism is part of the contribution, 150-180 words is acceptable if every sentence carries a distinct function.
 
-Retain the old strengths: short, concrete, front-loaded, and non-generic. Do not let a 150-word target delete the mechanism, the second contribution, or the scope condition when those are part of the intellectual claim.
+Retain the old strengths: short, concrete, front-loaded, and non-generic. Do
+not let a 150-word target delete the mechanism, the second contribution, or a
+scope boundary that the abstract itself needs to avoid material misreading.
+Do not repeat a generic disclaimer merely because the body contains one.
 
 ## 3. Compression Rule
 
@@ -48,7 +54,10 @@ For mixed theory-empirical papers, preserve at least one sentence or clause for:
 - the empirical object or design;
 - the main magnitude or fact;
 - the economic mechanism;
-- the scope/caveat if identification is limited.
+- any evidence boundary that the abstract still needs to prevent material
+  misreading after accurate verbs, claim type, and compact scope wording have
+  been used; do not require a standalone disclaimer merely because
+  identification is limited.
 
 For papers with dynamic, theoretical, or mechanism contributions, do not omit the mechanism merely because the empirical finding is easier to summarize.
 

@@ -9,6 +9,7 @@
 5. Elicitation and teach-back
 6. Freeze and drafting permission
 7. Writing within the contract
+7A. Caveat placement without defensive repetition
 8. Evidence conflicts
 9. Change control
 10. Semantic-fidelity audit
@@ -133,6 +134,12 @@ must_not_imply:
 forbidden_terms_or_frames:
 terminology:
 allowed_discretion:
+caveat_placement_policy:  # optional frozen semantics and repetition policy
+  - caveat_id:
+    intent_id:
+    boundary_meaning:
+    preferred_first_location:
+    permitted_repeat_triggers:
 unresolved_material_questions:
 approval_record:
   confirmed_by:
@@ -154,6 +161,16 @@ mark a material question unresolved and ask the author. A nonempty
 `forbidden_terms_or_frames` optional unless the author identifies a wording or
 frame whose presence itself would distort the intended message. Freeze
 semantics by default, not every word.
+
+Keep `required_qualifiers` backward compatible: an existing string or list
+continues to state the semantic boundary. The optional
+`caveat_placement_policy` freezes that boundary's preferred first location and
+the material triggers that permit repetition. Keep any optional
+`caveat_placement_registry` pointer in paper state or a handoff record, outside
+this frozen contract. The derived registry must not convert one qualifier into
+a sentence copied after every result, make mutable unit IDs part of the frozen
+author meaning, or force a new author-intent hash whenever manuscript units
+change.
 
 ## 5. Elicitation And Teach-Back
 
@@ -284,6 +301,56 @@ a candidate and state which frozen entries it would change. Do not insert an
 alternative into manuscript prose until the author approves and freezes the
 revised contract.
 
+## 7A. Caveat Placement Without Defensive Repetition
+
+Evidence-boundary accuracy and repeated disclaimer writing are different
+requirements. Preserve the former and normally remove the latter. First choose
+the correct claim type and a calibrated verb; then attach the minimum sample,
+period, geography, identification, or evidence qualifier needed to interpret
+the claim. Add a separate caveat sentence only when a material misreading would
+otherwise remain, and place it at the first location where the issue matters.
+
+Repeat a caveat only when the identification method, sample, period,
+geography, extrapolation target, or evidence grade changes; the text actually
+draws a long-run, welfare, or external-validity conclusion; a stand-alone
+abstract, caption, table or figure note must be self-contained; a specific
+identifying assumption or local-validity condition governs the exact result;
+or a journal, editor, or referee explicitly requires another statement.
+
+Do not set a rule such as “one caveat per section.” Some sections need none;
+others need more than one because their designs or scopes differ. Do not add
+generic sentences about non-causality, non-extrapolation, or unavailable
+long-run effects merely because a table or figure has appeared.
+
+Deleting a later repetition does not weaken the frozen intent when calibrated
+wording or the registered first location still conveys the full boundary to
+every affected claim. If deletion would leave a claim open to a materially
+stronger reading, keep or rewrite the specific boundary instead of restoring
+generic defensive prose.
+
+Do not write current sentence or unit IDs into the frozen author-intent
+contract. When deterministic QA exists, maintain a derived registry with this
+minimum shape:
+
+```text
+schema_id: caveat-placement-registry/1.0
+schema_version: "1.0"
+author_intent_revision_id:
+author_intent_sha256:
+manuscript_sha256:
+entries:
+  - caveat_id:
+    intent_id:
+    content_obligation_ids:  # optional; every obligation must trace to intent_id
+    first_required_location:
+    satisfied_by_unit_ids:
+    permitted_repeat_triggers:
+```
+
+Rebuild and rehash that derived registry after manuscript unit IDs change. It
+records presentation coverage only; the frozen intent and
+`caveat_placement_policy` remain the semantic authority.
+
 ## 8. Evidence Conflicts
 
 When author intent and evidence conflict:
@@ -336,8 +403,10 @@ Check:
    normative status and evidence strength did not change;
 4. **scope fidelity**: subjects, comparisons, timing, population, geography,
    outcomes, treatment, and model domain did not broaden or contract silently;
-5. **qualifier retention**: all caveats, conditions, exceptions, and evidence
-   limitations remain attached to the relevant claim;
+5. **qualifier retention and placement**: every required boundary is conveyed
+   by calibrated wording or at an adequate reader-visible location, while
+   identical defensive restatements with no new scope or evidence information
+   are merged; do not equate sentence repetition with semantic coverage;
 6. **negative constraints**: no `must_not_claim`, `must_not_imply`, forbidden
    frame, or equivalent implication appears;
 7. **cross-section consistency**: abstract, introduction, body, conclusion,

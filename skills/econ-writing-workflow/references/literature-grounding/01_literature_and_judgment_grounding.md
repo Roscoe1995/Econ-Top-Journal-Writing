@@ -4,6 +4,14 @@ Use this file before drafting or revising material that depends on prior literat
 
 The goal is not to add citations after the prose is written. The goal is to make local literature materials discipline the paper's substantive judgments before and during writing.
 
+For a full paper or proposal, major revision or restructure, substantive
+literature change, project-specific literature target, or final audit with
+references, also load
+`02_literature_coverage_and_citation_integrity.md`. That protocol defines the
+coverage contract, metadata manifest, registry states, evidence links, and
+final bibliography closure. This file remains the source-reading and judgment
+workflow; it is not a competing citation authority.
+
 ## 1. Start With A Literature Grounding Check
 
 Before drafting or revising a paper-level claim, check whether the project already has local literature materials:
@@ -35,6 +43,12 @@ When literature files are available, do not rely on memory, titles, abstracts al
 - claims the current paper may use, and claims it must not over-extend.
 
 Keep the ledger concise. It should support writing decisions; it is not a full paper summary.
+
+When a `literature-registry/1.0` exists, treat this source ledger as its
+author-readable working view. Reuse the same citekeys and states; do not create
+a second list that can independently admit or reject sources. A candidate or
+uninspected item may remain visible for search management but cannot support
+manuscript prose.
 
 ## 3. Add A Judgment Ledger
 
@@ -90,6 +104,12 @@ Use the source and judgment ledgers to avoid both over-conservatism and over-cla
 - If the sources study a different population, period, country, institution, or level of aggregation, mark the boundary before using the claim.
 - If the sources disagree, present the tension rather than choosing one side silently.
 
+Use accurate claim types and calibrated verbs before adding a separate caveat
+sentence. State a source-specific sample, period, method, or external-validity
+condition when it materially changes how the current paper may use the source;
+do not repeat the same generic warning after every citation or result under an
+unchanged evidence boundary.
+
 ## 6. Write With Source-Grounded Retrieval
 
 During drafting, follow this loop:
@@ -112,3 +132,11 @@ Before finalizing literature-dependent text, check:
 - every strong claim has adequate support strength;
 - every unsupported or unavailable source is either a non-semantic author-facing TODO, or has triggered `evidence_conflict`/a user question with the affected manuscript text withheld;
 - no author-facing source notes, extraction notes, or judgment labels entered the manuscript.
+
+For tasks that trigger the paper-level integrity protocol, also check that all
+applicable functional clusters are resolved; every manuscript citekey exists
+in the manifested library and is admitted in the registry; claim-level links
+use the existing `text_to_evidence_ledger`; and the final visible bibliography
+is derived from manuscript citekeys plus explicitly authorized `nocite` items.
+Unused items may remain in the source `.bib`; they fail only if they leak into
+the visible final bibliography without citation or authorization.

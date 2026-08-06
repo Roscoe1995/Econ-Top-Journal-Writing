@@ -39,11 +39,67 @@ Judges main-text versus appendix placement, table/figure function, notes, captio
 
 Route to `econ-table-figure-design`.
 
-## Literature Positioning Role
+## Literature Coverage And Citation Integrity Role
 
-Checks literature grouping, contribution margins, citation grounding, and whether claims are supported by supplied or inspected sources.
+This is an independent functional audit role outside the four sentence-level
+semantic roles and the fifth Main-Text Sufficiency and Conservation Role. Do
+not add it to `qa-assignment-registry/1.0`, change any semantic machine ID, or
+use its output to satisfy semantic unit coverage.
 
-Do not invent citations or closest-literature claims.
+Pre-register each run in a separate, hash-bound
+`literature-audit-assignment/1.0` record containing the native agent ID, task
+ID, dispatch time, independence declaration, and exact input hashes. The role
+result must bind that assignment ID and hash; absence, reuse, or mismatch is
+`audit_incomplete`. The assignment also binds the current core QA-assignment
+registry hash and lists as forbidden every drafting/integration
+agent plus all four semantic reviewers and the fifth conservation reviewer;
+the literature reviewer native-agent ID may not appear in that set.
+Core reviewer IDs are canonically derived from the core assignment registry;
+drafting and integration IDs must come from the current native task or handoff
+record. File validation can attest that the declared records are internally
+consistent, but cannot prove runtime isolation or detect an actor omitted from
+all editable files. Report that assurance limit explicitly as `proven: false`.
+
+Run it for a full paper or proposal, major revision or restructure,
+substantive literature change, or final audit of a manuscript with references.
+Do not trigger it for spelling, pure wording, or a bounded edit that leaves
+claims and citation relationships unchanged.
+
+Read the current manuscript, `literature-coverage-contract/1.0`,
+`reference-library-manifest/1.0`, `literature-registry/1.0`, and the existing
+`text_to_evidence_ledger`, plus the deterministic citation-integrity report.
+In final mode, also read the build attestation and visible bibliography bound
+inside that report.
+Check:
+
+- every applicable coverage cluster, including recent work and contrary or
+  alternative evidence when the contract marks them applicable;
+- whether focused contribution prose uses a defensible comparison set without
+  treating five to ten foregrounded papers as a paper-wide reference cap;
+- whether each substantive source has been inspected, admitted, and assigned
+  a valid coverage or evidence role;
+- whether manuscript claims are actually supported at their stated strength;
+- whether manuscript citekeys, authorized `nocite` items, and the final visible
+  bibliography form a current-hash closed set.
+
+Return exactly one hash-bound `literature-coverage-audit/1.0` object with the
+contract, library-manifest, registry, manuscript, ledger, deterministic-report,
+and, in final mode, visible-bibliography hashes; structured
+cluster/source/claim findings; and a gate status. Do not edit prose, the
+registry, or the reference library, and
+do not invent citations or closest-literature claims.
+
+The controller must then run `scripts/validate_literature_audit.py` with the
+explicit live QA manifest and its complete core assignment registry. The role's
+self-reported `gate_status`, or a deterministic citation-integrity pass by
+itself, is not an acceptance artifact.
+
+Use these fail-closed outcomes: missing, stale, malformed, or absent required
+role output is `audit_incomplete`; an unresolved applicable coverage gap is
+`fail`; a manuscript claim unsupported by admitted inspected sources is
+`evidence_conflict`; an unauthorized `nocite` is `approval_required`; and a
+format or metric that cannot be measured reliably is `metric_unavailable`.
+Only a current-hash result with no blocking finding may be `pass`.
 
 ## Exhaustive Semantic QA Roles
 
@@ -88,6 +144,16 @@ Review actor-constraint-behavior-outcome logic, comparison, direction, timing,
 population, geography, scope, negation, uncertainty, caveats, and the separation
 of association, causality, heterogeneity, and mechanism evidence.
 
+Check both failure directions: a real evidence boundary may not disappear or
+be weakened, and no-information defensive repetition should not be added after
+every table, figure, or result paragraph. Calibrated verbs and claim type may
+fully preserve a boundary without a standalone disclaimer. A limitation is
+repeated only when method, sample, period, geography, extrapolation target, or
+evidence level changes; a standalone abstract/caption/note needs it; or a
+journal/referee explicitly requires it. Do not enforce a per-section count,
+and do not demand a long-run caveat when the manuscript makes no long-run
+claim.
+
 In version 1, all four roles review every sentence/heading target. A specialist
 may return `not_applicable` with evidence, but a lexical pre-classifier cannot
 exclude the very reviewer who could discover an unmarked claim, missing
@@ -121,9 +187,12 @@ Route to:
 
 Polishes language after structure is stable.
 
-Run this role only after substantive semantic findings are closed. Treat its
-edits as a new change set and send changed and dependent units through
-independent semantic re-review before acceptance.
+Run this role only after substantive semantic findings and every triggered
+literature gate are current and `pass`. Treat its edits as a new change set and
+send changed and dependent units through independent semantic re-review; when
+the paper-level literature trigger is active, also regenerate the citation
+report, assignment, and literature audit against the changed candidate before
+acceptance.
 
 Route to:
 
@@ -161,9 +230,9 @@ reports only the reviewed change/dependency closure.
 
 ## Final Consistency Role
 
-Checks terminology, variables, table and figure numbers, magnitudes, caveats,
-contribution preservation, manuscript voice, unresolved non-semantic `TODO`
-items, and any blocking status after the sufficiency and conservation gate
-passes.
+Checks terminology, variables, table and figure numbers, magnitudes, concrete
+evidence-boundary semantics and their non-redundant placement, contribution
+preservation, manuscript voice, unresolved non-semantic `TODO` items, and any
+blocking status after the sufficiency and conservation gate passes.
 
 This role should be skeptical and should not rewrite the paper unless the controller asks for a final integrated pass.

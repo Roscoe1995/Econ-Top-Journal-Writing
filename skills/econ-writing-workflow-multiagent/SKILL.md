@@ -54,6 +54,17 @@ Before splitting work across agents or roles, create or update a shared paper st
 - coefficient values, magnitudes, mechanisms, robustness results, or caveats;
 - literature claims or citations.
 
+Evidence-boundary accuracy is not a license to repeat defensive disclaimers.
+Default to calibrated verbs, the correct claim type, and only the scope
+qualifiers needed for the sentence. State a material limitation once at the
+first place where it changes interpretation; repeat it only when the method,
+sample, period, geography, extrapolation target, or evidence level changes, or
+when a standalone abstract, caption, or note must remain intelligible, or a
+journal/referee explicitly requires it. Do not impose a per-section count.
+Removing a semantically redundant caveat is not loss of evidence discipline,
+but removing a concrete identification assumption or changing the effective
+claim remains a blocking semantic change.
+
 Missing non-semantic information may remain as a concrete `TODO`. Missing
 meaning or evidence needed to support a claim returns `clarification_required`
 or `evidence_conflict` and leaves the affected prose unwritten.
@@ -80,6 +91,10 @@ Load the relevant reference file before starting each phase:
 
 - Before any multi-agent task, load `references/controller_startup_checklist.md`.
 - Before drafting or semantic acceptance, load `references/exhaustive_semantic_qa_protocol.md`; also load the stable workflow's authoritative author-intent reference rather than inventing a multiagent intent schema.
+- For full papers/proposals, major revisions or restructures, substantive
+  literature changes, and final audits with references, load the stable
+  workflow's
+  `econ-writing-workflow/references/literature-grounding/02_literature_coverage_and_citation_integrity.md`.
 - For shared facts and the `paper_state` schema, load `references/paper_state_protocol.md`.
 - For full drafting, mature-manuscript revision, restructuring, shortening, or appendix relocation, load `references/artifact_conservation_and_depth_gates.md` before setting the paper spine or assigning roles.
 - For role definitions and when to use true sub-agents versus staged roles, load `references/agent_roles.md`.
@@ -110,8 +125,11 @@ For complex paper tasks, proceed in this order:
    teach back, and obtain confirmation when needed; proceed only when its exact
    scope is `frozen-current + ready`.
 4. Build or update `paper_state`, content obligations, definition registry,
-   four-way ledgers, and, when applicable, the artifact contract and baseline
-   measurements.
+   optional frozen caveat-placement policy and `pending_candidate` registry
+   pointer, four-way ledgers, literature authority pointers and status when
+   triggered, and, when applicable, the artifact contract and baseline
+   measurements. Materialize the derived caveat registry only after candidate
+   unit IDs exist.
 5. Audit inputs and keep non-semantic missing facts as `TODO`; stop semantic or
    evidence gaps with `clarification_required` or `evidence_conflict`.
 6. Settle the paper spine and create section cards with intent IDs, rewrite
@@ -121,13 +139,22 @@ For complex paper tasks, proceed in this order:
 8. For every complete paper/proposal, document-level translation/compression,
    or major revision, generate the deterministic QA manifest and run the four
    isolated semantic-review roles from the exhaustive-QA protocol.
-9. Resolve conflicts by authority rather than majority vote; apply only bounded
+9. When literature audit is triggered, run deterministic citation integrity
+   and the independent Literature Coverage and Citation Integrity Role outside
+   the core four-role plus conservation-role assignment schema, using its
+   separate hash-bound `literature-audit-assignment/1.0` record. Accept neither
+   artifact by inspection alone: run `scripts/validate_literature_audit.py`
+   over the live authorities, deterministic report, assignment, role result,
+   and applicable core assignment registry.
+10. Resolve conflicts by authority rather than majority vote; apply only bounded
    minimum patches, then re-review changed and dependent units.
-10. Run diction only after semantic acceptance, then run post-diction semantic
+11. Run diction only after semantic acceptance, then run post-diction semantic
     re-review.
-11. Run final deterministic conservation and independent main-text sufficiency
-    checks, followed by final consistency.
-12. Deliver only when every applicable gate is `pass`; otherwise return the
+12. Run final deterministic citation closure when references are present,
+    revalidate the final-hash literature assignment/result, then run
+    conservation and independent main-text sufficiency checks, followed by
+    final consistency.
+13. Deliver only when every applicable gate is `pass`; otherwise return the
     exact blocking status, unresolved items, and required user decision.
 
 ## Output Check
@@ -146,7 +173,15 @@ Before finalizing, confirm:
   evidence, definition, or scope conflicts retain a blocking status, while only
   missing non-semantic facts may remain as user-facing `TODO`;
 - table/figure decisions were integrated into the argument spine;
-- prose edits did not delete central contributions, mechanisms, magnitudes, caveats, or design features;
+- every triggered literature role has a current
+  gate-local `literature-audit-validation/1.0` pass from
+  `scripts/validate_literature_audit.py`; a plausible role memo or a
+  deterministic citation pass alone was not treated as acceptance, and this
+  local pass was not presented as whole-manuscript delivery authorization;
+- prose edits did not delete central contributions, mechanisms, magnitudes,
+  concrete necessary evidence boundaries, or design features; removal or
+  consolidation of no-information repeated disclaimers was not treated as a
+  semantic loss;
 - any mature-draft revision followed its recorded rewrite mode and mapped every substantive source block to a conservation-ledger disposition;
 - context or handoff limits were not used as manuscript-length instructions;
 - the QA manifest captures every reader-visible body, appendix, footnote,
@@ -160,6 +195,10 @@ Before finalizing, confirm:
 - reviewers returned structured findings without editing the manuscript, and
   controller patches plus diction changes received the required semantic
   re-review;
+- every triggered literature audit has a current separate assignment and is
+  current-hash bound; applicable coverage clusters, admitted citekeys, the
+  text-to-evidence ledger, and the final visible bibliography close under the
+  literature contract;
 - the integrated manuscript satisfies the artifact contract, cumulative compression permission, and main-text self-containment gate;
 - deterministic audit status is `pass`; if it first returned `approval_required`, any scoped approval was recorded and the audit was rerun to `pass`;
 - no fabricated data, citations, results, or policy implications entered the output.

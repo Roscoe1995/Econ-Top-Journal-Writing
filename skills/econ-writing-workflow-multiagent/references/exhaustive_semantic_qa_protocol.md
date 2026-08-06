@@ -7,6 +7,7 @@
 - Required state and four-way ledgers
 - Deterministic preparation
 - Independent semantic roles
+- Independent literature audit outside the core role registry
 - Main-text sufficiency and conservation result
 - Findings and gate decisions
 - Repair and re-review
@@ -139,7 +140,6 @@ in `revision_scope`, and every ID must exist in the frozen authoritative
 author-intent contract. The final validator requires an intent-to-text location
 and re-review result for every affected ID; lexical marker matching is not a
 substitute for the frozen mapping.
-substitute for this explicit declaration.
 Preparation expands the explicit changed/dependency selectors to a
 deterministic closure: all review targets in the changed paragraph, all
 lexically linked occurrences of affected intent IDs and definitions, and both
@@ -226,6 +226,19 @@ definition_registry:
   first_use_requires_definition:
   author_allowed_presupposition:
   intended_first_location:
+caveat_placement_registry:  # optional derived object; presentation/de-duplication only
+  schema_id: caveat-placement-registry/1.0
+  schema_version: "1.0"
+  author_intent_revision_id:
+  author_intent_sha256:
+  manuscript_sha256:
+  entries:
+    - caveat_id:
+      intent_id:
+      content_obligation_ids:  # optional; each obligation must trace to intent_id
+      first_required_location:
+      satisfied_by_unit_ids:
+      permitted_repeat_triggers:
 qa_contract:
   schema_version:
   qa_mode: exhaustive | bounded_change
@@ -282,6 +295,15 @@ meaning. They may not create a new intent, term meaning, mechanism, qualifier,
 or claim. The preparer rejects an unanchored or conflicting supplement before
 packet creation, and the validator independently repeats that authority check.
 
+The optional caveat-placement registry is not a second semantic authority. It
+may record where an author-owned evidence boundary is first satisfied and when
+repetition is permitted, but it may not create, weaken, or erase the governing
+intent. It is derived after drafting, binds the current manuscript and frozen
+intent hashes, and must be rebuilt when unit IDs change rather than written
+back into the frozen author contract. A calibrated verb or claim type may
+satisfy the boundary without a standalone disclaimer. Do not use a per-section
+quota.
+
 When claims require evidence beyond anchors already frozen inside the author
 contract, `evidence_registry_source` must point to current live bytes with this
 minimum schema:
@@ -319,7 +341,8 @@ summary:
 2. `text -> intent`: every manuscript claim maps to an authorized intent ID;
 3. `text -> evidence`: every factual, numerical, causal, theoretical,
    mechanism, or normative claim maps to inspected evidence and its permitted
-   strength;
+   strength; literature links include the reader-visible unit ID and admitted
+   citekey rather than only a prose source name;
 4. `baseline -> candidate`: every substantive baseline block maps to its
    preserved, revised, reordered, merged, authorized appendix, or authorized
    deletion destination.
@@ -566,6 +589,15 @@ comparison, logical direction, scope, timing, population, geography,
 uncertainty, caveats, and the distinction between association, causality,
 heterogeneity, and mechanism evidence.
 
+Check both missing and excessive boundary language. Preserve every concrete
+identification assumption and scope condition, but do not require the same
+non-causal, non-extrapolation, or no-long-run disclaimer after each table,
+figure, or result paragraph. Calibrated verbs and claim type may fully preserve
+the boundary. Repeat a caveat only for a changed method, sample, period,
+geography, extrapolation target, or evidence level; standalone readability; or
+an explicit journal/referee requirement. Do not enforce a per-section count or
+invent a long-run limitation when no long-run claim is made.
+
 Use role-protocol version `1.0` and these exact criterion IDs:
 
 - `author_intent_coverage`: `intent_coverage`, `unauthorized_claim`,
@@ -656,6 +688,56 @@ unreplayable conservation artifact turns the absence into `audit_incomplete`.
 
 Reviewers only return findings. They must not edit the manuscript, alter
 `paper_state`, rewrite the author-intent contract, or approve their own repair.
+
+## Independent Literature Audit Outside The Core Role Registry
+
+The Literature Coverage and Citation Integrity Role is not a fifth semantic
+reviewer and is not the sixth entry in `qa-assignment-registry/1.0`. The four
+machine IDs, their exact criterion IDs, `role_protocol_version: 1.0`, the
+semantic assignment shape, and the one conservation assignment remain
+unchanged.
+
+Pre-register this functional review in its own
+`literature-audit-assignment/1.0` record with the native agent/task identity,
+timezone-aware dispatch time, independence declaration, and exact input
+hashes. Bind the result to that assignment ID and SHA-256. This record stays
+outside `qa-assignment-registry/1.0` and therefore does not change its schema.
+Bind the explicit live QA manifest and complete core registry, then derive a
+forbidden native-agent
+set containing the drafting/integration agents, all four semantic reviewers,
+and the fifth conservation reviewer. Reusing any of them for the literature
+role is `audit_incomplete`.
+
+Trigger this independent functional audit for a full paper/proposal, major
+revision/restructure, substantive literature change, or final audit with
+references. Pure wording or spelling changes that do not alter claims or
+citations do not newly trigger it as a standalone bounded task. Once the
+current paper-level task has triggered literature audit, however, every final
+candidate must carry fresh hashes. Bind the role's `literature-coverage-audit/1.0`
+result to the current manuscript, `literature-coverage-contract/1.0`,
+`reference-library-manifest/1.0`, `literature-registry/1.0`,
+text-to-evidence ledger, deterministic citation report, and, in final mode,
+visible-bibliography hashes. Any manuscript byte change makes the prior
+deterministic report, assignment inputs, and role output stale even when the
+citekey set is unchanged.
+
+The role judges cluster sufficiency, source importance, inspection/admission,
+and semantic support; `audit_citation_integrity.py` checks deterministic sets,
+metadata, and hashes. Missing or stale role output returns `audit_incomplete`;
+an applicable coverage gap returns `fail`; an unsupported claim returns
+`evidence_conflict`; unauthorized `nocite` returns `approval_required`; and an
+unmeasurable format returns `metric_unavailable`. The role returns structured
+findings only and does not edit manuscript or literature authorities.
+
+Do not accept those two outputs separately. Run
+`scripts/validate_literature_audit.py` to canonically replay the deterministic
+citation audit, verify the separate assignment and reviewer/task isolation,
+bind every current input hash, check the role's checks/findings/status mapping,
+and combine the result into one fail-closed
+`literature-audit-validation/1.0` gate-local status. It explicitly does not
+authorize whole-manuscript delivery. This validator remains
+outside `validate_manuscript_qa.py`, so the stable semantic and fifth-role
+assignment schema is unchanged.
 
 ## Main-Text Sufficiency And Conservation Result
 
@@ -928,6 +1010,9 @@ open. Only `delivery_status: pass` after every applicable gate passes permits
 final delivery. A report must retain every blocker in `findings` even when it
 also exposes one deterministic primary status; do not let a primary status,
 majority vote, or approval item erase a simultaneous failure.
+The deterministic citation report and combined literature-acceptance report
+are explicitly gate-local: each records
+`whole_manuscript_delivery_authorized: false` and omits `delivery_status`.
 
 Validator exit codes are `0` pass, `1` fail, `2` approval required, `3` metric
 unavailable, `4` audit incomplete, `5` clarification required, and `6` evidence
@@ -957,23 +1042,28 @@ After every patch:
 
 Run diction only after the substantive semantic gate passes. Treat diction as
 a new change set: regenerate affected units and run semantic re-review so that
-smoother prose cannot remove a caveat, alter a definition, or strengthen a
-claim. A reviewer or controller cannot approve the exact repair it authored
-without an independent re-review.
+smoother prose cannot remove a concrete evidence boundary, alter a definition,
+or strengthen a claim. Consolidating semantically redundant disclaimer wording
+is allowed when the governing boundary remains satisfied. A reviewer or
+controller cannot approve the exact repair it authored without an independent
+re-review.
 
 ## End-To-End Order
 
 ```text
 author intent clarified, taught back, confirmed, and frozen-current + ready
--> content obligations, definition registry, and artifact/length contract
+-> content obligations, definition registry, artifact/length contract, and any
+   triggered literature authorities
 -> patch/reorder or section drafting
 -> deterministic QA manifest and contextual packets
 -> isolated native-subagent semantic reviews
+-> deterministic citation audit and independent literature audit when triggered
 -> authority-based conflict resolution
 -> bounded minimum patches
 -> changed-unit and dependency re-review
 -> language-specific diction
 -> post-diction semantic re-review
+-> final citation closure and refreshed literature audit whenever the triggered candidate hash changed
 -> final deterministic conservation and main-text sufficiency audit
 -> delivery only when every applicable gate is pass
 ```

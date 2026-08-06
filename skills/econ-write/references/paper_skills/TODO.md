@@ -1,7 +1,7 @@
 ---
 purpose: "List weak, incomplete, or non-actionable parts of paper_skills found during review."
 applies_to: "paper_skills maintenance, rule completion, and future content integration."
-last_updated: "2026-05-13"
+last_updated: "2026-08-03"
 used_by: "paper_skills"
 ---
 
@@ -29,7 +29,6 @@ used_by: "paper_skills"
 - `02_house_style_english.md`: missing enforceable English style rules and examples.
 - `03_abstract_rules.md`: now contains contribution-preserving abstract rules; later expansion could add journal-specific variants and more examples.
 - `04_introduction_rules.md`: now contains contribution-preserving introduction rules; later expansion could add more field-specific opening patterns.
-- `05_related_literature_rules.md`: missing citation grouping, contribution positioning, and avoid-list rules.
 - `06_theory_section_rules.md`: missing model setup, assumptions, propositions, intuition, proof placement, and prediction mapping rules.
 - `07_empirical_section_rules.md`: missing data, identification, estimation, sample audit, coefficient interpretation, and causal language rules.
 - `08_tables_figures_rules.md`: missing table/figure admission criteria, notes, labels, column structure, and caption rules.
@@ -49,6 +48,7 @@ used_by: "paper_skills"
 - `README.md` references all expected files and the references are consistent with file names.
 - `11_revision_linter.md` now references the active abstract and introduction rules. It should be extended after the remaining placeholder files are filled.
 - After rule bodies are added, all internal references should use exact file names, including the `13_journal_specific/` prefix for journal files.
+- `05_related_literature_rules.md` is now substantive and points to the stable workflow's grounding and citation-integrity protocols. `11_revision_linter.md` should later add explicit checks for coverage clusters, foreground-versus-total distinction, and final bibliography closure.
 
 ## Vagueness Risks
 

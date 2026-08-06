@@ -65,6 +65,18 @@ Run this checklist before any multi-agent or staged-agent economics writing task
      into a parallel contract.
    - Build content obligations, the definition registry, QA contract, and
      four-way ledgers before drafting.
+   - Before drafting, record only the optional frozen caveat-placement policy
+     and a `pending_candidate` paper-state pointer when one limitation could
+     otherwise be repeated across sections. Build the derived registry only
+     after a candidate and stable unit IDs exist; then record the first
+     satisfied unit and the exact triggers that permit repetition rather than
+     imposing a per-section quota.
+   - For a full paper/proposal, major revision/restructure, substantive
+     literature change, or final audit with references, resolve the current
+     `literature-coverage-contract/1.0`,
+     `reference-library-manifest/1.0`, `literature-registry/1.0`, and
+     text-to-evidence ledger paths and hashes. A pure wording edit that leaves
+     claims and citation relationships unchanged does not trigger this layer.
    - Mark only non-semantic missing facts as concrete `TODO` items.
    - Do not invent data, citations, results, mechanisms, or sample details.
 
@@ -81,6 +93,11 @@ Run this checklist before any multi-agent or staged-agent economics writing task
 10. Use controller-mediated cross-agent collaboration when needed.
    - Use `cross_agent_collaboration_protocol.md`.
    - Section agents may request functional review, but only the controller updates `paper_state`, table/figure placement, or section cards.
+   - Treat the Literature Coverage and Citation Integrity Role as an
+     independent functional audit outside the four semantic roles and the
+     fifth conservation role. Do not add it to the QA assignment registry;
+     when a candidate exists, pre-register it in a separate
+     `literature-audit-assignment/1.0` record.
 
 11. Before semantic dispatch, complete the native assignment registry.
    - Fill every semantic packet and the one fifth-role assignment with unique
@@ -119,6 +136,12 @@ approval_triggers:
 section_agents_needed:
 functional_agents_needed:
 semantic_reviewers_available:
+literature_audit_trigger:
+literature_authorities_status:
+citation_integrity_status: not_triggered | pending_candidate | pass | blocking_status
+literature_assignment_status: not_triggered | pending_candidate | assigned | stale | blocking_status
+literature_role_status: not_triggered | pending_candidate | pass | blocking_status
+literature_acceptance_validation_status: not_triggered | pending_candidate | pass | stale | blocking_status
 first_handoff:
 blocking_todos:  # legacy field; non-semantic TODO facts only
 blocking_statuses:
@@ -133,6 +156,16 @@ Pause and ask the user or return a bounded plan if:
   author-intent contract, including when only part of the contract was
   confirmed;
 - a requested claim depends on unavailable literature or uninspected sources;
+- before drafting, a literature-triggering task lacks the coverage contract,
+  library manifest, literature registry, or available inspected evidence
+  needed for the requested claims. A deterministic citation report and the
+  independent hash-bound literature audit require a candidate manuscript, so
+  record them as `pending_candidate` rather than creating a startup deadlock;
+- after a candidate exists, a triggered draft/final acceptance step lacks its
+  current deterministic citation report or independent hash-bound literature
+  audit; return the applicable `audit_incomplete`, `fail`,
+  `evidence_conflict`, `approval_required`, or `metric_unavailable` state
+  rather than treating a long bibliography as sufficient;
 - a mature-manuscript restructuring may materially shorten the main text but has no accepted baseline, target, or approval scope;
 - the baseline, appendix boundary, or required page metric is unavailable or ambiguous and the proposed edit would cross an artifact gate;
 - the task appears to be paid ghostwriting, fabricated research, or academic misconduct;
