@@ -42,7 +42,8 @@ Use one restrained visual system across the paper. The reader should notice the 
 
 - English captions use `Table`, `Figure`, and `Notes:`.
 - Chinese captions use `表`, `图`, and `注：`.
-- Translate functional labels, not variable names that are already established as technical identifiers.
+- Write every reader-visible functional and variable label in the manuscript language. Retain only standard mathematical symbols, established abbreviations, formal classification codes, or proper names, and define them in the reader's language when they are not self-explanatory. Code use alone never makes an internal identifier suitable for display.
+- Maintain separate English and Chinese display-label maps. Do not default to literal translation or mixed-language labels; require the two versions to preserve the same concept, unit, transformation, baseline, and comparison direction.
 - Keep units, sample definitions, and standard-error descriptions in the language of the manuscript.
 
 ## Check
