@@ -18,22 +18,33 @@ Do not invent:
 
 ## TODO Format
 
+A `TODO` is an author-facing record of a missing fact, source, value, or
+verification; it is not author authorization and must not appear as a settled
+manuscript claim. Do not use one to bypass uncertainty about what the author
+wants to claim, not claim, imply, qualify, emphasize, retain, or omit. If the
+missing item would change meaning or the maximum claim supported by evidence,
+return `clarification_required` or `evidence_conflict` and do not draft the
+affected text. Apply the author-intent protocol first.
+
 Use concrete markers:
 
 ```text
-TODO[data]: Add the sample window and unit of observation.
-TODO[variable]: Define the treatment variable and its unit.
-TODO[result]: Insert the coefficient, standard error, and economic magnitude from Table X.
-TODO[literature]: Add verified citations for the closest papers on this mechanism.
-TODO[judgment]: Confirm whether reference papers support using X as the mechanism/variable/specification.
-TODO[identification]: State the identifying assumption and the main threat.
+TODO[citation]: Verify the page number for the already-supported definition in Source X.
+TODO[metadata]: Complete the issue number and DOI for Source Y.
+TODO[result]: Insert the verified coefficient, standard error, and economic magnitude from Table X; keep the affected sentence unwritten until then.
+BLOCKED[data]: Confirm the sample window and unit of observation before drafting the affected design text.
+BLOCKED[mechanism]: Provide inspected mechanism evidence or revise the intended claim; return evidence_conflict meanwhile.
+BLOCKED[identification]: Confirm the identifying assumption and main threat before drafting the affected identification claim.
 ```
 
-Each `TODO` must name the missing object and where it affects the draft.
+Each `TODO` or `BLOCKED` item must name the missing object and where it affects
+the draft. Use `BLOCKED`, not `TODO`, whenever the missing item changes meaning
+or the maximum claim supported by evidence.
 
 ## Allowed Provisional Language
 
-Use provisional wording only when it is visibly conditional:
+Use provisional wording only in an author memo, never as a substitute for the
+affected manuscript text:
 
 - "The draft can state this claim after the author verifies ..."
 - "This paragraph assumes the table shows ..."
@@ -50,6 +61,6 @@ If the request appears to be paid ghostwriting, undisclosed authorship, fabricat
 When key inputs are missing, produce:
 
 1. what can be drafted now;
-2. what must remain as `TODO`;
+2. what may remain as a non-semantic `TODO` and what is substantively `BLOCKED`;
 3. what cannot be drafted responsibly;
 4. the smallest set of additional files or facts needed to proceed.

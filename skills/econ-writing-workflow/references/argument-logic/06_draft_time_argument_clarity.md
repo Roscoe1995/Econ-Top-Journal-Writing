@@ -6,7 +6,16 @@ The rule is prospective: apply it before writing each paper-facing paragraph. A 
 
 ## Draft Gate
 
-Before writing a paragraph, answer these questions internally. If the answer is missing from the manuscript context, ask the user or leave a concrete `TODO`; do not invent it.
+First apply
+`references/author-intent/01_author_intent_contract_and_semantic_fidelity.md`.
+Do not answer questions about the author's intended meaning only internally.
+If an answer that would change the proposition, claim strength, comparison,
+mechanism status, scope, qualifier, implication, or emphasis is not fixed by a
+current frozen contract, return `clarification_required`, ask the
+author, and do not draft the affected paragraph. A `TODO` may stand only for a
+missing factual detail that does not alter the confirmed meaning.
+
+After author intent is fixed, answer these clarity questions before writing:
 
 1. What is the exact object of the sentence: theory object, empirical unit, variable, sample, policy, mechanism, or comparison?
 2. What can the reader observe: data unit, variable construction, institutional event, model primitive, table column, figure pattern, or citation?
@@ -100,5 +109,10 @@ Before finalizing a section, search for sentences with these risks:
 - contribution paragraphs organized as "we do X, we do Y";
 - unnecessary synonym changes for the same object;
 - author-facing planning language instead of paper-facing claims.
+
+Then map the paragraph back to its author-intent entries. Check that it neither
+omits nor changes a required proposition, adds an unapproved interpretation,
+upgrades claim strength or mechanism status, drops a required qualifier, nor
+creates a forbidden implication.
 
 Revise these issues before polishing diction. Clear argument structure comes before elegant wording.

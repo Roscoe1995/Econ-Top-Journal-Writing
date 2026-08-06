@@ -12,13 +12,18 @@ Only `Manuscript Text` may enter the paper. `Author Memo` and `Task Log` belong 
 
 ## Unclear Manuscript Facts
 
-If a manuscript fact or author choice is unclear, do not fill it in by guessing. Ask the user or mark a concrete `TODO` in an author memo when the uncertainty concerns:
+If a manuscript fact or author choice is unclear, do not fill it in by guessing. Apply the author-intent gate and return `clarification_required` without drafting the affected text when the uncertainty concerns:
 
 - research question, theory channel, mechanism, or contribution;
 - variable definition, sample construction, estimation choice, identification assumption, or coefficient interpretation;
 - table/figure meaning, main-text versus appendix placement, target-journal requirement, or whether to keep/delete a substantive claim.
 
-Do not turn uncertainty into manuscript prose such as `本文可能`, `可理解为`, `可以认为`, or a confident claim not supported by the provided draft/results.
+These are semantic choices: do not replace the author's decision with a
+`TODO`, a tentative sentence, or silent omission. A concrete author-facing
+`TODO` is allowed only for a missing factual, citation, or verification detail
+that does not change a frozen-current proposition or its evidence boundary.
+Do not turn uncertainty into manuscript prose such as `本文可能`, `可理解为`,
+`可以认为`, or a confident claim not supported by the provided draft/results.
 
 ## Author-Facing Diagnostic Labels
 
@@ -95,7 +100,7 @@ Turn author-facing draft talk into reader-facing economics prose:
 - Instead of saying the paper uses a certain "writing style," state the research design's scope: `本文提供任务结构与AI技术方向匹配的测度和反事实核算，不估计AI对城市GDP、工资或就业的总效应。`
 - Instead of saying content was moved for length, state the appendix object: `附录C报告替换指标、调整样本门槛和改变权重口径后的完整稳健性结果。`
 - Instead of saying a section satisfies a call for papers, state the substantive fit: `本文把AI能力的任务方向与城市新增劳动需求结构连接起来，刻画通用技术在空间上的潜在收益差异。`
-- Instead of saying the author will later supplement a point, either write the missing fact as `TODO` in an author memo or omit it from manuscript text.
+- Instead of saying the author will later supplement a point, put a genuinely non-semantic missing fact in an author-facing `TODO`. Do not omit a frozen `must_express` proposition; if the missing item changes its meaning or support, return `clarification_required` or `evidence_conflict` and leave the affected manuscript text unwritten.
 
 ## Final Delivery Check
 

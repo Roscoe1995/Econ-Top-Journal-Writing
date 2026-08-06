@@ -194,6 +194,11 @@ For empirical coding, data cleaning, or regressions, pair these writing skills w
 
 ### English
 
+- **2026-07-18 update**:
+  1. Added three selectively loaded `research-convergence` references for scope and claim contracts, theory/empirical closure gates, and proposal/revision/stop gates.
+  2. `econ-writing-workflow` now classifies the task stage before routing these checks: exploration and local polishing are protected from premature freezing or unsolicited paper-wide audits, while full drafting, major revision, proposals, and final audits load only the applicable sections.
+  3. The new rules distinguish evidence status, model and measurement closure, proposal feasibility, normative policy conditions, and mature-draft stop/reopen criteria. Fixed paragraph counts, result counts, and minimal-model advice remain paper-type-sensitive defaults, and all workflow matrices or scope lists stay outside manuscript prose.
+  4. Normalized the `econ-write` frontmatter by removing the unsupported `argument-hint` and `user-invocable` keys. Its `name`, `description`, complete instruction body, references, and explicit/implicit skill routing are unchanged; both source and installed copies now pass the current strict skill validator.
 - **2026-05-17 update**:
   1. Added a shared `regression-results` reference module for economic magnitude interpretation in both English and Chinese writing.
   2. `econ-writing-workflow` now routes main regression results, coefficient interpretation, marginal effects, interaction net effects, log-to-percent conversions, and mean/standard-deviation/percentile or policy-benchmark comparisons to this module.
@@ -222,6 +227,11 @@ For empirical coding, data cleaning, or regressions, pair these writing skills w
 
 ### 中文
 
+- **2026-07-18 更新**：
+  1. 新增三个按需加载的 `research-convergence` reference，分别处理研究范围与主张契约、理论/实证闭合门槛，以及 Proposal/分轮修改/停止修改门槛。
+  2. `econ-writing-workflow` 现在会先识别任务阶段再路由这些检查：探索和局部润色不会被过早冻结或擅自扩展为全文审查；完整起草、重大修改、Proposal 和终稿审查只加载适用部分。
+  3. 新规则区分证据状态、模型与测量闭合、Proposal 可行性、规范性政策条件，以及成熟稿的停止/重开标准。固定段数、结果数量和最小模型仍是按论文类型调整的默认建议；范围清单和一致性矩阵只留在作者侧记录中，不进入论文正文。
+  4. 已规范化 `econ-write` 的 frontmatter，删除当前规范和验证器均不支持的 `argument-hint`、`user-invocable`。`name`、`description`、完整指令正文、references 以及显式/隐式 skill 路由均未改变；源文件与安装副本现在都通过严格验证。
 - **2026-05-17 更新**：
   1. 新增中英文共用的 `regression-results` 参考模块，用于回归结果经济量级解释。
   2. `econ-writing-workflow` 现在会把主回归结果、系数解释、边际效应、交互项净效应、对数到百分比转换，以及均值、标准差、分位差或政策幅度比较路由到该模块。
