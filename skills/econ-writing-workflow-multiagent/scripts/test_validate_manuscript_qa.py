@@ -20,11 +20,15 @@ from validate_manuscript_qa import (
     ROLE_PROTOCOLS,
     ROLE_PROTOCOL_VERSION,
     artifact_depth_question_specs,
+    non_placeholder_review_text,
     resolve_depth_question_candidate_sections,
+    unit_has_frozen_negative_caveat_authorization,
     validate_authority_source_adapter,
     validate_conservation_canonical_replay,
     validate_depth_question_evidence_units,
     validate_formula_registry,
+    validate_negative_caveat_admission_evidence,
+    validate_review_record,
     validate_task_stage_artifact_mode,
 )
 
@@ -1383,6 +1387,812 @@ class ManuscriptQAValidatorTests(unittest.TestCase):
         }[status]
         self.assertEqual(completed.returncode, expected, completed.stdout + completed.stderr)
         self.assertEqual(report["exit_code"], expected)
+
+    def test_negative_caveat_admission_profile_is_complete_and_consistent(self) -> None:
+        self.assertEqual(ROLE_PROTOCOL_VERSION, "1.4")
+        self.assertEqual(ROLE_PROTOCOL_VERSION, QA_PREPARER.ROLE_PROTOCOL_VERSION)
+        self.assertEqual(ROLE_PROTOCOLS, QA_PREPARER.ROLE_PROTOCOLS)
+        caveat_text = (
+            "This simulated route threshold isn't a prediction of actual "
+            "grounded vehicles."
+        )
+        unit = {
+            "unit_id": "synthetic-negative-caveat",
+            "text": caveat_text,
+            "normalized_text": caveat_text,
+            "intent_ids": [],
+            "risk": {
+                "categories": ["negative_caveat_candidate"],
+                "matched_contract_markers": [],
+            },
+            "risk_flags": ["negative_caveat_candidate"],
+        }
+        authorized_unit = copy.deepcopy(unit)
+        authorized_unit["intent_ids"] = ["intent-caveat"]
+        authorized_unit["risk"]["categories"].append("contract_marked")
+        authorized_unit["risk"]["matched_contract_markers"] = [
+            {
+                "text": caveat_text,
+                "category": "contract_marked",
+                "intent_id": "intent-caveat",
+                "source_authority": "author_intent_proposition",
+            }
+        ]
+        self.assertFalse(unit_has_frozen_negative_caveat_authorization(unit))
+        self.assertTrue(
+            unit_has_frozen_negative_caveat_authorization(authorized_unit)
+        )
+        case_changed_unit = copy.deepcopy(authorized_unit)
+        case_changed_unit["text"] = caveat_text.replace("This", "this")
+        case_changed_unit["normalized_text"] = case_changed_unit["text"]
+        self.assertFalse(
+            unit_has_frozen_negative_caveat_authorization(case_changed_unit)
+        )
+        whitespace_changed_unit = copy.deepcopy(authorized_unit)
+        whitespace_changed_unit["text"] = caveat_text.replace(
+            "route threshold", "route\nthreshold"
+        )
+        whitespace_changed_unit["normalized_text"] = whitespace_changed_unit[
+            "text"
+        ]
+        self.assertTrue(
+            unit_has_frozen_negative_caveat_authorization(
+                whitespace_changed_unit
+            )
+        )
+        hidden_changed_unit = copy.deepcopy(authorized_unit)
+        hidden_changed_unit["text"] = caveat_text.replace(
+            "route threshold", "route\u200b threshold"
+        )
+        hidden_changed_unit["normalized_text"] = hidden_changed_unit["text"]
+        self.assertFalse(
+            unit_has_frozen_negative_caveat_authorization(hidden_changed_unit)
+        )
+        compatibility_changed_unit = copy.deepcopy(authorized_unit)
+        compatibility_changed_unit["text"] = caveat_text.replace(
+            "This", "Ｔhis"
+        )
+        compatibility_changed_unit["normalized_text"] = (
+            compatibility_changed_unit["text"]
+        )
+        self.assertFalse(
+            unit_has_frozen_negative_caveat_authorization(
+                compatibility_changed_unit
+            )
+        )
+        spoofed_unit = copy.deepcopy(authorized_unit)
+        spoofed_unit["risk"]["matched_contract_markers"][0][
+            "source_authority"
+        ] = "qa_contract_marker"
+        self.assertFalse(
+            unit_has_frozen_negative_caveat_authorization(spoofed_unit)
+        )
+        keep_evidence = {
+            "evidence_schema_id": "negative-caveat-admission/1.0",
+            "candidate_classification": "standalone_negative_caveat",
+            "classification_reason": "The sentence separately denies a concrete interpretation of the simulated threshold.",
+            "bounded_claim_or_quantity": "The synthetic 23%--29% order-rerouting threshold.",
+            "concrete_material_misreading": "Readers could treat the threshold as an observed grounded-vehicle rate.",
+            "already_covered_by_affirmative_wording": False,
+            "new_object_only_in_negation": True,
+            "affirmative_explanation": "The threshold measures the order-rerouting share required to close the simulated waiting-time gap between two routes.",
+            "standalone_negative_necessary": True,
+            "necessity_reason": "The surrounding text otherwise leaves a concrete threshold-to-grounded-vehicle reading open, and calibrated affirmative wording cannot prevent it in this independently read note.",
+            "recommended_disposition": "keep",
+        }
+
+        def validate(
+            evidence: object,
+            verdict: str = "pass",
+            *,
+            target: dict | None = None,
+            criterion: str = "scope_conditions",
+            author_action: bool = False,
+        ) -> tuple[bool, GateAudit]:
+            audit = GateAudit()
+            accepted = validate_negative_caveat_admission_evidence(
+                unit=target or unit,
+                criterion_id=criterion,
+                verdict=verdict,
+                requires_author_action=author_action,
+                evidence=evidence,
+                path=Path("synthetic-review.json"),
+                audit=audit,
+            )
+            return accepted, audit
+
+        accepted, audit = validate(
+            copy.deepcopy(keep_evidence), target=authorized_unit
+        )
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+        accepted, audit = validate(copy.deepcopy(keep_evidence))
+        self.assertFalse(accepted)
+        self.assertIn(
+            "negative_caveat_admission_inconsistent",
+            {item["code"] for item in audit.findings},
+        )
+        accepted, audit = validate(
+            copy.deepcopy(keep_evidence),
+            "needs_author",
+            author_action=True,
+        )
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+
+        integrate_evidence = copy.deepcopy(keep_evidence)
+        integrate_evidence.update(
+            {
+                "standalone_negative_necessary": False,
+                "recommended_disposition": "integrate_affirmative",
+            }
+        )
+        accepted, audit = validate(integrate_evidence, "fail")
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+
+        delete_evidence = copy.deepcopy(integrate_evidence)
+        delete_evidence.update(
+            {
+                "already_covered_by_affirmative_wording": True,
+                "recommended_disposition": "delete",
+            }
+        )
+        accepted, audit = validate(delete_evidence, "violation")
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+
+        not_a_caveat = {
+            "evidence_schema_id": "negative-caveat-admission/1.0",
+            "candidate_classification": "not_a_caveat",
+            "classification_reason": "The lexical hit belongs to a not-only construction rather than a negative caveat.",
+            "bounded_claim_or_quantity": None,
+            "concrete_material_misreading": None,
+            "already_covered_by_affirmative_wording": False,
+            "new_object_only_in_negation": False,
+            "affirmative_explanation": None,
+            "standalone_negative_necessary": False,
+            "necessity_reason": None,
+            "recommended_disposition": "not_a_caveat",
+        }
+        for verdict in (
+            "pass",
+            "fail",
+            "not_applicable",
+            "non_claim",
+            "uncertain",
+            "evidence_conflict",
+            "violation",
+            "authorized_function",
+        ):
+            with self.subTest(not_a_caveat_verdict=verdict):
+                accepted, audit = validate(not_a_caveat, verdict)
+                self.assertTrue(accepted)
+                self.assertEqual(audit.status(), "pass")
+
+        noncandidate = {"unit_id": "ordinary", "risk": {"categories": []}}
+        accepted, audit = validate(
+            "ordinary reviewer evidence",
+            target=noncandidate,
+        )
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+        accepted, audit = validate(
+            "ordinary reviewer evidence",
+            criterion="economic_logic",
+        )
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+
+        accepted, audit = validate("unstructured evidence")
+        self.assertFalse(accepted)
+        self.assertIn(
+            "negative_caveat_admission_evidence_missing",
+            {item["code"] for item in audit.findings},
+        )
+        review_unit = copy.deepcopy(authorized_unit)
+        review_unit.update(
+            {
+                "text_sha256": digest_text("synthetic caveat"),
+                "source": {
+                    "unit_id": unit["unit_id"],
+                    "text_sha256": digest_text("synthetic caveat"),
+                },
+            }
+        )
+        review_record = {
+            "unit_id": unit["unit_id"],
+            "criterion_id": "scope_conditions",
+            "verdict": "pass",
+            "source_span": copy.deepcopy(review_unit["source"]),
+            "evidence": "unstructured evidence",
+            "reason": "Synthetic integration check.",
+            "severity": "none",
+            "confidence": 0.95,
+            "requires_author_action": False,
+        }
+        audit = GateAudit()
+        parsed = validate_review_record(
+            review_record,
+            Path("synthetic-review.json"),
+            "reviewer-economics",
+            "economic_logic_scope_qualifiers",
+            "isolated-context",
+            None,
+            {unit["unit_id"]: review_unit},
+            audit,
+        )
+        self.assertIsNone(parsed)
+        self.assertIn(
+            "negative_caveat_admission_evidence_missing",
+            {item["code"] for item in audit.findings},
+        )
+        review_record["evidence"] = copy.deepcopy(keep_evidence)
+        audit = GateAudit()
+        parsed = validate_review_record(
+            review_record,
+            Path("synthetic-review.json"),
+            "reviewer-economics",
+            "economic_logic_scope_qualifiers",
+            "isolated-context",
+            None,
+            {unit["unit_id"]: review_unit},
+            audit,
+        )
+        self.assertIsNotNone(parsed)
+        self.assertEqual(audit.status(), "pass")
+        review_record["severity"] = "critical"
+        audit = GateAudit()
+        parsed = validate_review_record(
+            review_record,
+            Path("synthetic-review.json"),
+            "reviewer-economics",
+            "economic_logic_scope_qualifiers",
+            "isolated-context",
+            None,
+            {unit["unit_id"]: review_unit},
+            audit,
+        )
+        self.assertIsNone(parsed)
+        self.assertIn(
+            "unit_review_field_invalid",
+            {item["code"] for item in audit.findings},
+        )
+        review_record["severity"] = "none"
+        missing = copy.deepcopy(keep_evidence)
+        missing.pop("affirmative_explanation")
+        accepted, audit = validate(missing)
+        self.assertFalse(accepted)
+        self.assertIn(
+            "negative_caveat_admission_fields_missing",
+            {item["code"] for item in audit.findings},
+        )
+        invalid = copy.deepcopy(keep_evidence)
+        invalid.update(
+            {
+                "evidence_schema_id": "wrong-schema",
+                "candidate_classification": "maybe",
+                "classification_reason": "",
+                "already_covered_by_affirmative_wording": 1,
+                "affirmative_explanation": "",
+                "recommended_disposition": "rewrite_somehow",
+            }
+        )
+        accepted, audit = validate(invalid)
+        self.assertFalse(accepted)
+        codes = {item["code"] for item in audit.findings}
+        self.assertIn("negative_caveat_admission_schema_invalid", codes)
+        self.assertIn("negative_caveat_admission_fields_invalid", codes)
+
+        for placeholder in (
+            "N/A",
+            "TODO",
+            "unknown",
+            "pending",
+            "not applicable",
+            "not_applicable",
+            "TBA",
+            "TBA later",
+            "TBC",
+            "TBR",
+            "TK",
+            "FIXME",
+            "TODO later",
+            "placeholder",
+            "none yet",
+            "nothing yet",
+            "not yet",
+            "to be confirmed",
+            "to be determined",
+            "x",
+            "待补",
+            "暂无",
+            "暂缺",
+            "待确认",
+            "待审核",
+            "未知",
+            "\u200b\u200c",
+            "---...!!!",
+        ):
+            placeholder_evidence = copy.deepcopy(keep_evidence)
+            for field in (
+                "classification_reason",
+                "bounded_claim_or_quantity",
+                "concrete_material_misreading",
+                "affirmative_explanation",
+                "necessity_reason",
+            ):
+                placeholder_evidence[field] = placeholder
+            with self.subTest(placeholder=repr(placeholder)):
+                accepted, audit = validate(placeholder_evidence)
+                self.assertFalse(accepted)
+                self.assertIn(
+                    "negative_caveat_admission_fields_invalid",
+                    {item["code"] for item in audit.findings},
+                )
+
+        workflow_narratives = (
+            "Pending supervisor signoff before the report is completed.",
+            "Awaiting coauthor approval before the write-up is finalized.",
+            "The prose will be supplied after the next revision round.",
+            "待导师批复后补上这一段理由。",
+            "返修时由课题组再写具体说明。",
+        )
+        for narrative in workflow_narratives:
+            with self.subTest(workflow_narrative=repr(narrative)):
+                self.assertTrue(non_placeholder_review_text(narrative))
+        workflow_filler = copy.deepcopy(keep_evidence)
+        for field, narrative in zip(
+            (
+                "classification_reason",
+                "bounded_claim_or_quantity",
+                "concrete_material_misreading",
+                "affirmative_explanation",
+                "necessity_reason",
+            ),
+            workflow_narratives,
+        ):
+            workflow_filler[field] = narrative
+        accepted, audit = validate(workflow_filler)
+        self.assertFalse(accepted)
+        self.assertIn(
+            "negative_caveat_admission_inconsistent",
+            {item["code"] for item in audit.findings},
+        )
+        accepted, audit = validate(
+            workflow_filler, "needs_author", author_action=True
+        )
+        self.assertTrue(accepted)
+        self.assertEqual(audit.status(), "pass")
+
+        for substantive in (
+            "To document the bounded threshold, the sentence names the simulated object.",
+            "To be determined by observed capacity, the equilibrium route choice solves the firm's problem.",
+            "Unknown selection into treatment is the concrete stronger reading at issue.",
+            "Pending regulatory approval delays implementation and changes the comparison date.",
+            "Pending regulation delays investment.",
+            "Pending litigation disrupts investment.",
+            "Pending regulation suppresses investment.",
+            "Awaiting certification, plants remain unable to operate.",
+            "Awaiting approval postpones implementation.",
+            "Waiting for certification delays operation.",
+            "Evidence forthcoming from the next survey wave changes the sample definition.",
+            "Evidence forthcoming from the survey clarifies the mechanism.",
+            "Evidence forthcoming resolves the ambiguity.",
+            "The forthcoming rule changes the relevant policy population.",
+            "To be determined by capacity, entry must satisfy market clearing.",
+            "未定义变量会使读者把该比较误解为另一项估计。",
+            "待定系数进入目标函数并由一阶条件联合识别。",
+            "待定系数服从标准正态分布。",
+            "待完善的市场制度限制企业进入。",
+            "有待确认的测量误差扩大估计偏差。",
+            "稍后确认的信息改变企业投资决策。",
+            "等待认证延迟投产。",
+            "暂无证据支持将这一相关性解释为因果效应。",
+            "暂无统计证据拒绝原假设。",
+            "有待检验的选择机制会使该系数产生另一种经济解释。",
+        ):
+            with self.subTest(substantive=repr(substantive)):
+                self.assertTrue(non_placeholder_review_text(substantive))
+
+        inconsistent_cases: list[tuple[str, dict, str]] = []
+        wrong_classification_disposition = copy.deepcopy(integrate_evidence)
+        wrong_classification_disposition["recommended_disposition"] = "not_a_caveat"
+        inconsistent_cases.append(
+            ("standalone-not-a-caveat-disposition", wrong_classification_disposition, "fail")
+        )
+        keep_without_necessity = copy.deepcopy(keep_evidence)
+        keep_without_necessity["standalone_negative_necessary"] = False
+        inconsistent_cases.append(("keep-without-necessity", keep_without_necessity, "fail"))
+        covered_but_integrated = copy.deepcopy(integrate_evidence)
+        covered_but_integrated["already_covered_by_affirmative_wording"] = True
+        inconsistent_cases.append(("covered-but-not-deleted", covered_but_integrated, "fail"))
+        integrate_with_pass = copy.deepcopy(integrate_evidence)
+        inconsistent_cases.append(("integration-passed", integrate_with_pass, "pass"))
+        keep_with_nonclaim = copy.deepcopy(keep_evidence)
+        inconsistent_cases.append(("keep-nonclaim", keep_with_nonclaim, "non_claim"))
+        copied_filler = copy.deepcopy(keep_evidence)
+        for field in (
+            "classification_reason",
+            "bounded_claim_or_quantity",
+            "concrete_material_misreading",
+            "affirmative_explanation",
+            "necessity_reason",
+        ):
+            copied_filler[field] = (
+                "A longer filler statement will be resolved after the author provides additional material."
+            )
+        inconsistent_cases.append(("copied-filler", copied_filler, "pass"))
+        not_a_with_text = copy.deepcopy(not_a_caveat)
+        not_a_with_text["bounded_claim_or_quantity"] = "A caveat-only value."
+        inconsistent_cases.append(("not-a-caveat-with-text", not_a_with_text, "pass"))
+        not_a_with_boolean = copy.deepcopy(not_a_caveat)
+        not_a_with_boolean["new_object_only_in_negation"] = True
+        inconsistent_cases.append(("not-a-caveat-with-boolean", not_a_with_boolean, "pass"))
+        for name, evidence, verdict in inconsistent_cases:
+            with self.subTest(name=name):
+                accepted, audit = validate(evidence, verdict)
+                self.assertFalse(accepted)
+                self.assertTrue(
+                    {
+                        "negative_caveat_admission_fields_invalid",
+                        "negative_caveat_admission_inconsistent",
+                    }
+                    & {item["code"] for item in audit.findings}
+                )
+
+    def test_negative_caveat_direct_evidence_is_enforced_by_full_gate(self) -> None:
+        case_mismatch_contract = copy.deepcopy(self.contract_payload)
+        case_mismatch_contract["author_intent_contract"]["propositions"].append(
+            {
+                "intent_id": "intent-caveat-case-mismatch",
+                "must_express": "This simulated route threshold isn't a prediction of Actual grounded vehicles.",
+                "claim_type": "scope_condition",
+                "evidence_anchors": ["synthetic-route-note"],
+            }
+        )
+        self.contract = self.write_json(
+            "contract-negative-caveat-case-mismatch.json",
+            case_mismatch_contract,
+        )
+        self.contract_hash = digest_bytes(self.contract.read_bytes())
+        self.candidate.write_text(
+            "\\begin{document}\\section{Main}\n\n"
+            "Treatment, the registered exposure, increases the outcome within the registered sample.\n\n"
+            "Treatment is defined before the next discussion.\n\n"
+            "This simulated route threshold isn't a prediction of actual grounded vehicles.\n"
+            "\\appendix\n"
+            "\\end{document}\n",
+            encoding="utf-8",
+        )
+        self.candidate_hash = digest_bytes(self.candidate.read_bytes())
+        prepared_document = QA_PREPARER.expand_tex(
+            self.candidate, self.root.resolve()
+        )
+        self.content_hash = digest_text(prepared_document.text)
+        self.qa_contract = self.write_json(
+            "qa-contract-negative-caveat-gate.json",
+            {
+                "qa_contract": {
+                    "schema_version": "1.0",
+                    "gate_status": "ready",
+                    "qa_mode": "bounded_change",
+                    "manuscript_path": str(self.candidate),
+                    "task_classification": {
+                        "task_stage": "local_polish",
+                        "qa_mode": "bounded_change",
+                        "basis": "A synthetic route-threshold caveat changed.",
+                        "changed_artifact_or_source_ranges": [
+                            {
+                                "path": self.candidate.name,
+                                "start_line": 7,
+                                "end_line": 7,
+                            }
+                        ],
+                        "substantive_dependencies_checked": [],
+                        "affected_intent_ids": ["intent-main"],
+                        "classified_by": "test-controller",
+                        "classified_at": "2026-08-05T10:00:00+08:00",
+                    },
+                    "revision_scope": {
+                        "revision_id": "patch-caveat-1",
+                        "changed_source_ranges": [
+                            {
+                                "path": self.candidate.name,
+                                "start_line": 7,
+                                "end_line": 7,
+                            }
+                        ],
+                        "dependency_unit_ids": [],
+                        "affected_intent_ids": ["intent-main"],
+                    },
+                    "required_roles": list(ROLE_PROTOCOLS),
+                    "minimum_high_risk_independent_reviews": 2,
+                }
+            },
+        )
+        self.qa_contract_hash = digest_bytes(self.qa_contract.read_bytes())
+        self.artifact_contract_hash = ""
+        output = self.root / "prepared-negative-caveat-gate"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(PREPARE_SCRIPT),
+                "--manuscript",
+                str(self.candidate),
+                "--project-root",
+                str(self.root),
+                "--author-intent-contract",
+                str(self.contract),
+                "--qa-contract",
+                str(self.qa_contract),
+                "--output-dir",
+                str(output),
+            ],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.manifest_payload = json.loads(
+            (output / "qa_manifest.json").read_text(encoding="utf-8")
+        )
+        candidate_unit = next(
+            unit
+            for unit in self.manifest_payload["units"]
+            if unit.get("type") == "sentence"
+            and "actual grounded vehicles" in unit.get("text", "")
+        )
+        self.assertIn(
+            "negative_caveat_candidate", candidate_unit["risk"]["categories"]
+        )
+        case_marker = next(
+            marker
+            for marker in candidate_unit["risk"]["matched_contract_markers"]
+            if marker.get("intent_id") == "intent-caveat-case-mismatch"
+        )
+        self.assertEqual(
+            case_marker["source_authority"], "author_intent_proposition"
+        )
+        self.assertNotEqual(case_marker["text"], candidate_unit["text"])
+        self.assertFalse(
+            unit_has_frozen_negative_caveat_authorization(candidate_unit)
+        )
+        self.unit_one_id = next(
+            unit["unit_id"]
+            for unit in self.manifest_payload["units"]
+            if unit.get("text") == self.unit_one_text
+            and unit.get("type") == "sentence"
+        )
+        self.unit_two_id = next(
+            unit["unit_id"]
+            for unit in self.manifest_payload["units"]
+            if unit.get("text") == self.unit_two_text
+            and unit.get("type") == "sentence"
+        )
+        self.main_section_id = next(
+            unit["unit_id"]
+            for unit in self.manifest_payload["units"]
+            if unit.get("type") == "section"
+            and unit.get("section_title") == "Main"
+            and unit.get("region") == "main_text"
+        )
+        self.packet_by_role = self.attach_packets(
+            self.manifest_payload,
+            directory="gate-negative-caveat-packets",
+            artifact_contract_hash="",
+        )
+        self.manifest = self.write_json(
+            "gate-negative-caveat-manifest.json", self.manifest_payload
+        )
+        self.manifest_hash = digest_bytes(self.manifest.read_bytes())
+        selected_unit_ids = [
+            unit["unit_id"]
+            for unit in self.manifest_payload["units"]
+            if unit.get("review_target")
+            and unit.get("selected_for_review") is not False
+        ]
+        review_paths = self.passing_result_paths_for_units(
+            selected_unit_ids, "gate-negative-caveat-reviews"
+        )
+        revision_targets = set(
+            self.manifest_payload["revision_target_unit_ids"]
+        )
+        for path in review_paths:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            payload["revision_id"] = "patch-caveat-1"
+            for review in payload["unit_reviews"]:
+                if review["unit_id"] in revision_targets:
+                    review["revision_id"] = "patch-caveat-1"
+            if payload["reviewer"]["role"] == "author_intent_coverage":
+                payload["ledgers"]["intent_to_text"].append(
+                    {
+                        "intent_id": "intent-caveat-case-mismatch",
+                        "unit_ids": [candidate_unit["unit_id"]],
+                        "status": "covered",
+                    }
+                )
+                for entry in payload["ledgers"]["text_to_intent"]:
+                    if entry["unit_id"] == candidate_unit["unit_id"]:
+                        entry.clear()
+                        entry.update(
+                            {
+                                "unit_id": candidate_unit["unit_id"],
+                                "intent_ids": [
+                                    "intent-caveat-case-mismatch"
+                                ],
+                                "status": "authorized",
+                            }
+                        )
+                payload["ledgers"]["revision_rechecks"] = [
+                    {
+                        "unit_id": unit["unit_id"],
+                        "revision_id": "patch-caveat-1",
+                        "text_sha256": unit["text_sha256"],
+                        "status": "rechecked",
+                    }
+                    for unit in self.manifest_payload["units"]
+                    if unit["unit_id"] in revision_targets
+                ]
+            if payload["reviewer"]["role"] == "evidence_claim_strength":
+                payload["ledgers"]["text_to_evidence"].append(
+                    {
+                        "unit_id": candidate_unit["unit_id"],
+                        "evidence_ids": ["synthetic-route-note"],
+                        "status": "supported",
+                    }
+                )
+            self.write_json(str(path.relative_to(self.root)), payload)
+
+        blocked, blocked_report = self.run_validator(review_paths)
+        self.assert_status(blocked, blocked_report, "audit_incomplete")
+        self.assertIn(
+            "negative_caveat_admission_evidence_missing",
+            {item["code"] for item in blocked_report["findings"]},
+        )
+
+        economics_path = next(
+            path
+            for path in review_paths
+            if json.loads(path.read_text(encoding="utf-8"))["reviewer"]["role"]
+            == "economic_logic_scope_qualifiers"
+        )
+        economics_payload = json.loads(
+            economics_path.read_text(encoding="utf-8")
+        )
+        scope_review = next(
+            review
+            for review in economics_payload["unit_reviews"]
+            if review["unit_id"] == candidate_unit["unit_id"]
+            and review["criterion_id"] == "scope_conditions"
+        )
+        scope_review["verdict"] = "fail"
+        scope_review["severity"] = "minor"
+        scope_review["evidence"] = {
+            "evidence_schema_id": "negative-caveat-admission/1.0",
+            "candidate_classification": "standalone_negative_caveat",
+            "classification_reason": "The sentence separately denies an observed-vehicle interpretation of a simulated route threshold.",
+            "bounded_claim_or_quantity": "The simulated route threshold.",
+            "concrete_material_misreading": "Readers could treat the simulation as an observed grounded-vehicle count.",
+            "already_covered_by_affirmative_wording": False,
+            "new_object_only_in_negation": True,
+            "affirmative_explanation": "The threshold describes a simulated route comparison under stated inputs.",
+            "standalone_negative_necessary": False,
+            "necessity_reason": "The distinction can be integrated into the affirmative threshold interpretation.",
+            "recommended_disposition": "integrate_affirmative",
+        }
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        failed, failed_report = self.run_validator(review_paths)
+        self.assert_status(failed, failed_report, "fail")
+        self.assertIn(
+            "review_failure",
+            {item["code"] for item in failed_report["findings"]},
+        )
+
+        scope_review["verdict"] = "needs_author"
+        scope_review["severity"] = "none"
+        scope_review["requires_author_action"] = True
+        scope_review["evidence"] = {
+            "evidence_schema_id": "negative-caveat-admission/1.0",
+            "candidate_classification": "standalone_negative_caveat",
+            "classification_reason": "The sentence separately denies an observed-vehicle interpretation of a simulated route threshold.",
+            "bounded_claim_or_quantity": "The simulated route threshold.",
+            "concrete_material_misreading": "Readers could treat the simulation as an observed grounded-vehicle count.",
+            "already_covered_by_affirmative_wording": False,
+            "new_object_only_in_negation": True,
+            "affirmative_explanation": "The threshold describes a simulated route comparison under stated inputs.",
+            "standalone_negative_necessary": True,
+            "necessity_reason": "The independently read note otherwise leaves the observed-vehicle interpretation materially plausible, and calibrated affirmative wording cannot prevent that decision-relevant misreading.",
+            "recommended_disposition": "keep",
+        }
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        author_required, author_required_report = self.run_validator(review_paths)
+        self.assert_status(
+            author_required, author_required_report, "clarification_required"
+        )
+        self.assertTrue(
+            {"review_uncertain", "author_action_required"}
+            <= {item["code"] for item in author_required_report["findings"]}
+        )
+
+        justified_keep_evidence = copy.deepcopy(scope_review["evidence"])
+        scope_review["verdict"] = "pass"
+        scope_review["requires_author_action"] = False
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        unauthorized_pass, unauthorized_pass_report = self.run_validator(
+            review_paths
+        )
+        self.assert_status(
+            unauthorized_pass, unauthorized_pass_report, "audit_incomplete"
+        )
+        self.assertIn(
+            "negative_caveat_admission_inconsistent",
+            {item["code"] for item in unauthorized_pass_report["findings"]},
+        )
+
+        decorated_placeholder_evidence = copy.deepcopy(justified_keep_evidence)
+        decorated_placeholder_evidence.update(
+            {
+                "classification_reason": "Pending supervisor signoff before the report is completed.",
+                "bounded_claim_or_quantity": "Awaiting coauthor approval before the write-up is finalized.",
+                "concrete_material_misreading": "The prose will be supplied after the next revision round.",
+                "affirmative_explanation": "Completion of the narrative is scheduled after internal review.",
+                "necessity_reason": "A separate signoff memo will later document the rationale.",
+            }
+        )
+        scope_review["evidence"] = decorated_placeholder_evidence
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        placeholder_blocked, placeholder_report = self.run_validator(review_paths)
+        self.assert_status(
+            placeholder_blocked, placeholder_report, "audit_incomplete"
+        )
+        self.assertIn(
+            "negative_caveat_admission_inconsistent",
+            {item["code"] for item in placeholder_report["findings"]},
+        )
+
+        decorated_placeholder_evidence.update(
+            {
+                "classification_reason": "待导师批复后补上这一段理由。",
+                "bounded_claim_or_quantity": "合著者将在返修时说明具体对象。",
+                "concrete_material_misreading": "课题组之后再写可能产生的误读。",
+                "affirmative_explanation": "批复完成后补充正面解释。",
+                "necessity_reason": "返修报告将另行给出保留理由。",
+            }
+        )
+        scope_review["evidence"] = decorated_placeholder_evidence
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        cjk_placeholder_blocked, cjk_placeholder_report = self.run_validator(
+            review_paths
+        )
+        self.assert_status(
+            cjk_placeholder_blocked,
+            cjk_placeholder_report,
+            "audit_incomplete",
+        )
+        self.assertIn(
+            "negative_caveat_admission_inconsistent",
+            {item["code"] for item in cjk_placeholder_report["findings"]},
+        )
+
+        scope_review["evidence"] = justified_keep_evidence
+        scope_review["verdict"] = "needs_author"
+        scope_review["requires_author_action"] = True
+        self.write_json(
+            str(economics_path.relative_to(self.root)), economics_payload
+        )
+        restored, restored_report = self.run_validator(review_paths)
+        self.assert_status(restored, restored_report, "clarification_required")
 
     def test_complete_fresh_independent_audit_passes(self) -> None:
         completed, report = self.run_validator(self.passing_result_paths())

@@ -284,7 +284,7 @@ Identify 1-2 specific, concrete directions:
 - Do NOT speculate beyond what the data or model show
 - Do NOT write your grant application here (Cochrane)
 - Do NOT say "I leave X for future research" (Cochrane) -- instead, describe concretely what the extension would look like
-- Do NOT add a separate "limitations" or "caveats" subsection in the conclusion. Put a specific limitation at its first genuinely necessary location in the body; repeat it only when the design, scope, evidence grade, or stand-alone format changes
+- Do NOT add a separate "limitations" or "caveats" subsection in the conclusion. At the first genuinely necessary location in the body, state the relevant scope affirmatively inside the result interpretation; use a separate negative limitation only as a last resort, only when its exact proposition is frozen by the author, and repeat it only when the design, scope, evidence grade, or stand-alone format changes
 - If applied micro, consider framing the conclusion like a policy brief (Nikolov)
 
 ---
@@ -438,12 +438,18 @@ The three most important things: Identification, Identification, Identification.
 - If means, standard deviations, percentiles, or policy benchmarks are unavailable, ask for them, compute them from supplied data, or mark a concrete TODO instead of inventing them
 - Present results from most parsimonious to least parsimonious specification
 - Preserve evidence boundaries through accurate verbs, claim types, and the
-  minimum necessary scope condition. Do not append the same `not causal`,
-  `cannot be extrapolated`, or `cannot identify long-run effects` sentence to
-  every table, figure, or result paragraph under an unchanged design. Repeat a
-  caveat only after a material identification, sample, period, geography,
-  extrapolation, or evidence-grade change, or when a stand-alone note must be
-  self-contained
+  minimum necessary scope condition. Before adding even the first or only
+  stand-alone negative caveat, state affirmatively what the estimate, threshold,
+  scenario, or model object represents and what interpretation it supports.
+  This is explanatory wording, not favorable spin. Admit a separate `not
+  causal`, `cannot be extrapolated`, or `cannot identify long-run effects`
+  sentence only when it blocks a concrete material misreading not already
+  excluded by calibrated wording; bind it to the exact claim or number and use
+  it as a last resort. Do not self-authorize that sentence: unless its exact
+  proposition is already frozen by the author, return `clarification_required`
+  instead of adding or retaining it. Repeat it only after a material identification, sample,
+  period, geography, extrapolation, or evidence-grade change, or when a
+  stand-alone note must be self-contained
 
 ## Presenting Null Results
 - A null result IS a result. Frame it as informative, not as failure
@@ -692,7 +698,7 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 3. Fix passive voice, vague language, throat-clearing, buried leads
 4. Tighten prose -- cut unnecessary words and sentences
 5. Ensure concrete results are stated with magnitudes
-6. Preserve the author's meaning, main contribution, strategically important secondary contribution, mechanism, data/design feature, magnitude, and necessary caveat meaning; merge repeated caveat wording when the evidence boundary is unchanged
+6. Preserve the author's meaning, main contribution, strategically important secondary contribution, mechanism, data/design feature, magnitude, and necessary caveat meaning; rewrite a first, unique, or repeated no-information defensive sentence as affirmative interpretation when the evidence boundary is already conveyed
 7. Compare the rewrite with the original and restore any dropped central claim in compressed form
 8. Briefly note what you changed and why
 
@@ -736,7 +742,7 @@ Not all economics subfields follow identical conventions. Adapt these rules by f
 4. Include robustness and mechanism analysis when they serve distinct evidentiary roles; do not create a default limitations subsection
 5. Use visuals before tables for preliminary results
 6. For null results: frame as informative, report confidence intervals, discuss power
-7. State a specific evidence boundary once when first needed, and repeat it only after a material design or scope change or in a stand-alone note
+7. State what the estimate, threshold, scenario, or model object represents before adding a negative boundary. Retain a separate negative caveat only when it blocks a concrete material misreading not already excluded by calibrated wording; bind it to the exact object, use it as a last resort, and repeat it only after a material design or scope change or in a stand-alone note. If the exact negative proposition is not frozen by the author, ask rather than self-authorizing it
 
 ## When asked to write a THEORY or MODEL section:
 1. The introduction must state the main insight/mechanism in plain English within the first two paragraphs
@@ -836,7 +842,7 @@ Before submitting, verify:
 - [ ] Standard errors reported for every important number
 - [ ] Identification strategy is clearly explained in economic terms
 - [ ] Conclusion avoids a formulaic caveats section but preserves necessary scope, causality, or interpretation limits
-- [ ] The same defensive caveat is not repeated after unchanged tables, figures, or result paragraphs; any repeat corresponds to a material scope/evidence change or a stand-alone requirement
+- [ ] A first, unique, or repeated defensive caveat adds material interpretive information that affirmative wording cannot carry; any retained negative sentence is bound to an exact claim or number and an exact frozen author-intent proposition, and any repeat corresponds to a material scope/evidence change or a stand-alone requirement
 - [ ] Abstract is concrete and follows the default 100-150 word target unless the journal imposes a hard cap or the paper type justifies 150-180 words
 - [ ] Abstract/introduction/conclusion rewrites preserve the main contribution, any strategically important secondary contribution, mechanism, key magnitudes, data/design feature, and necessary caveat meanings while merging redundant repetitions
 - [ ] Paper is under 40 pages (check target journal guidelines)

@@ -892,6 +892,197 @@ Exposure enters the specification. An unknown object remains. It causes a 12 per
         self.assertGreaterEqual(len(marker_sentence["required_roles"]), 2)
         self.assertIn("I1", marker_sentence["intent_ids"])
 
+    def test_negative_caveat_candidate_is_flagged_with_full_paragraph_context(self) -> None:
+        manuscript = self.write(
+            "synthetic-negative-caveat.txt",
+            """1. Results
+在模拟参数下，使两条运输线路等待时间差归零所需的订单改道比例为23%—29%。上述核算用于比较参数敏感性，不是对实际停运车辆数的预测。
+""",
+        )
+        completed, manifest, _ = self.run_prepare(
+            manuscript, "out_synthetic_negative_caveat"
+        )
+        manifest = self.assert_prepared(completed, manifest)
+        candidate = next(
+            unit
+            for unit in manifest["units"]
+            if unit["type"] == "sentence" and "实际停运车辆数" in unit["text"]
+        )
+        self.assertIn("negative_caveat_candidate", candidate["risk_flags"])
+        self.assertTrue(candidate["high_risk"])
+        self.assertIn(
+            "economic_logic_scope_qualifiers", candidate["required_roles"]
+        )
+        self.assertIn("23%—29%", candidate["context"]["paragraph_text"])
+        self.assertIn("23%—29%", candidate["context"]["previous_review_text"])
+
+        english_risk = MODULE.risk_for_text(
+            "This simulation is not a prediction of actual grounded vehicles.",
+            [],
+        )
+        self.assertIn("negative_caveat_candidate", english_risk["categories"])
+
+    def test_affirmative_threshold_explanation_is_not_a_negative_caveat_candidate(self) -> None:
+        affirmative = (
+            "这里的23%—29%是使两条运输线路等待时间差归零的模拟阈值，"
+            "用于刻画等待时间差对订单改道比例的敏感性。"
+        )
+        risk = MODULE.risk_for_text(affirmative, [])
+        self.assertIn("numeric", risk["categories"])
+        self.assertNotIn("negative_caveat_candidate", risk["categories"])
+
+    def test_negative_caveat_candidate_variants_and_false_positive_guards(self) -> None:
+        candidates = (
+            "This simulated threshold isn't a prediction of actual grounded vehicles.",
+            "This simulation won't predict actual grounded vehicles.",
+            "This simulation won’t predict actual grounded vehicles.",
+            "The model doesn't predict observed route closures.",
+            "These findings don't identify a causal effect.",
+            "The analysis never predicts actual route closures.",
+            "The analysis neither estimates nor predicts actual route closures.",
+            "The model offers no forecast of actual route closures.",
+            "The estimate provides no causal interpretation.",
+            "The scenario has no employment interpretation.",
+            "The route comparison should not be generalized beyond the simulated network.",
+            "There is no evidence that the estimate is causal.",
+            "The estimate cannot speak to effects outside the sample.",
+            "该模拟结果不能解释为因果效应。",
+            "该线路比较无法识别实际停运车辆数。",
+            "该阈值并不意味着实际停运车辆数。",
+            "该模拟差异不应解释为因果效应。",
+            "该结果不宜理解为因果效应。",
+            "该指标不应视为政策效果。",
+            "该结果不适用于样本外。",
+            "该线路比较不可外推。",
+            "该结果尚不能外推到其他地区。",
+            "该结果无法外推到其他地区。",
+            "该结果不具有因果含义。",
+            "该结果未识别实际就业效应。",
+            "该结果未能识别实际就业效应。",
+            "该结果尚未识别实际就业效应。",
+            "该结果没有识别实际就业效应。",
+            "该结果不足以解释为因果效应。",
+            "该结果难以外推到其他地区。",
+            "该结果尚难外推到其他地区。",
+            "本模型不预测实际停工车辆数。",
+        )
+        for text in candidates:
+            with self.subTest(text=text):
+                risk = MODULE.risk_for_text(text, [])
+                self.assertIn("negative_caveat_candidate", risk["categories"])
+
+        non_candidates = (
+            "The paper not only estimates waiting times but also reports route counts.",
+            "The paper does not only estimate waiting times but also report route counts.",
+            "The paper do not only estimate waiting times in the diagnostic template.",
+            "No evidence was omitted from the estimates.",
+            "The coefficient is not statistically significant at conventional levels.",
+            "该系数在统计上不显著。",
+        )
+        for text in non_candidates:
+            with self.subTest(text=text):
+                risk = MODULE.risk_for_text(text, [])
+                self.assertNotIn(
+                    "negative_caveat_candidate", risk["categories"]
+                )
+
+    def test_specific_identification_boundary_is_a_candidate_not_an_automatic_failure(self) -> None:
+        manuscript = self.write(
+            "synthetic-required-boundary.txt",
+            """1. Results
+本表使用非随机试点的横截面比较，系数描述控制可观测特征后的条件相关性，不作为政策因果效应解释。
+""",
+        )
+        completed, manifest, _ = self.run_prepare(
+            manuscript, "out_synthetic_required_boundary"
+        )
+        manifest = self.assert_prepared(completed, manifest)
+        sentence = next(
+            unit for unit in manifest["units"] if unit["type"] == "sentence"
+        )
+        self.assertIn("negative_caveat_candidate", sentence["risk_flags"])
+        self.assertIn("causal", sentence["risk_flags"])
+        self.assertEqual(set(sentence["required_roles"]), set(MODULE.DEFAULT_ROLES))
+
+    def test_negative_caveat_admission_profile_is_hash_bound_and_direct(self) -> None:
+        self.assertEqual(MODULE.ROLE_PROTOCOL_VERSION, "1.4")
+        profile = MODULE.ROLE_PROTOCOLS["economic_logic_scope_qualifiers"][
+            "conditional_evidence_profiles"
+        ]["negative_caveat_candidate"]
+        self.assertEqual(profile["criterion_id"], "scope_conditions")
+        self.assertEqual(
+            profile["evidence_schema_id"], "negative-caveat-admission/1.0"
+        )
+        self.assertEqual(
+            profile["evidence_container"], "direct_unit_review_evidence_object"
+        )
+        self.assertEqual(
+            set(profile["required_evidence_fields"]),
+            {
+                "evidence_schema_id",
+                "candidate_classification",
+                "classification_reason",
+                "bounded_claim_or_quantity",
+                "concrete_material_misreading",
+                "already_covered_by_affirmative_wording",
+                "new_object_only_in_negation",
+                "affirmative_explanation",
+                "standalone_negative_necessary",
+                "necessity_reason",
+                "recommended_disposition",
+            },
+        )
+        self.assertEqual(
+            profile["field_constraints"]["candidate_classification"],
+            ["standalone_negative_caveat", "not_a_caveat"],
+        )
+        self.assertEqual(
+            profile["field_constraints"]["recommended_disposition"],
+            ["keep", "integrate_affirmative", "delete", "not_a_caveat"],
+        )
+        self.assertIn("explanatory, not favorable", profile["decision_rule"])
+        self.assertIn("never stronger than the evidence", profile["decision_rule"])
+        self.assertIn("exact unit matches a frozen author-intent proposition", profile["decision_rule"])
+        self.assertIn("needs_author", profile["decision_rule"])
+        caveat = "This bounded estimate is not a forecast of plant closures."
+        markers = MODULE.contract_markers(
+            {
+                "propositions": [
+                    {"intent_id": "I-caveat", "must_express": caveat}
+                ]
+            },
+            {},
+            [],
+            [],
+        )
+        risk = MODULE.risk_for_text(caveat, markers)
+        frozen_marker = next(
+            marker
+            for marker in risk["matched_contract_markers"]
+            if marker.get("intent_id") == "I-caveat"
+        )
+        self.assertEqual(
+            frozen_marker["source_authority"], "author_intent_proposition"
+        )
+        spoofed_markers = MODULE.contract_markers(
+            {},
+            {
+                "high_risk_markers": [
+                    {
+                        "text": caveat,
+                        "category": "contract_marked",
+                        "intent_id": "I-caveat",
+                        "source_authority": "author_intent_proposition",
+                    }
+                ]
+            },
+            [],
+            [],
+        )
+        self.assertEqual(
+            spoofed_markers[0]["source_authority"], "qa_contract_marker"
+        )
+
     def test_substantive_heading_requires_intent_and_definition_review(self) -> None:
         manuscript = self.write(
             "heading.md", "# Exposure causes higher wages\nA bounded result follows.\n"

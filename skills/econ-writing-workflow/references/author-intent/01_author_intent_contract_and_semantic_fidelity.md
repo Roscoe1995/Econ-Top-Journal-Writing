@@ -310,6 +310,41 @@ period, geography, identification, or evidence qualifier needed to interpret
 the claim. Add a separate caveat sentence only when a material misreading would
 otherwise remain, and place it at the first location where the issue matters.
 
+Before admitting even the first or only stand-alone negative caveat, run this
+admission test:
+
+1. identify the exact preceding claim, number, estimate, threshold, scenario,
+   or model object that the caveat would limit;
+2. state the concrete and materially stronger reading that a reader could
+   otherwise draw;
+3. check whether the existing claim type, calibrated verb, or nearby scope
+   wording already excludes that reading;
+4. check whether the caveat introduces a new outcome, estimand, prediction, or
+   policy object only to deny that the paper estimates it; and
+5. first try an integrated affirmative explanation of what the object is, what
+   it measures, and what interpretation it supports.
+
+`Affirmative` means explanatory rather than favorable: it must not strengthen
+the evidence or make the result sound more positive. If steps 2--4 show no
+remaining material misreading, delete the negative sentence. If a negative
+contrast is still necessary, bind it to the exact object in step 1 and use a
+separate sentence only when the distinction cannot be stated clearly inside
+the interpretation itself. The agent's conclusion that the contrast is useful
+does not authorize manuscript text. If that exact negative proposition is not
+already frozen in this contract, return `clarification_required`, show the
+author the affirmative alternative and proposed contrast, and freeze it only
+after the author's confirmation.
+
+If the author approves the exceptional stand-alone sentence, store its exact
+reader-visible wording in a new or superseding `propositions[].must_express`
+entry with a distinct intent ID, update the contract revision, confirmation,
+freeze record, and hash, and regenerate downstream QA. Do not merely change a
+reviewer's `needs_author` verdict to `pass`. If the author rejects it, freeze
+the affirmative integration or deletion outcome instead.
+
+A derived `caveat_placement_registry` records where an authorized meaning is
+satisfied; it cannot create authorization for a new negative proposition.
+
 Repeat a caveat only when the identification method, sample, period,
 geography, extrapolation target, or evidence grade changes; the text actually
 draws a long-run, welfare, or external-validity conclusion; a stand-alone
@@ -322,10 +357,11 @@ others need more than one because their designs or scopes differ. Do not add
 generic sentences about non-causality, non-extrapolation, or unavailable
 long-run effects merely because a table or figure has appeared.
 
-Deleting a later repetition does not weaken the frozen intent when calibrated
-wording or the registered first location still conveys the full boundary to
-every affected claim. If deletion would leave a claim open to a materially
-stronger reading, keep or rewrite the specific boundary instead of restoring
+Deleting a unique no-information caveat or a later repetition does not weaken
+the frozen intent when calibrated wording or the registered first location
+still conveys the full boundary to every affected claim. If deletion would
+leave a claim open to a materially stronger reading, rewrite the specific
+boundary as affirmative interpretation where possible instead of restoring
 generic defensive prose.
 
 Do not write current sentence or unit IDs into the frozen author-intent
